@@ -14,4 +14,24 @@ NOTE: some operations do not currently work in 'compile' mode. Still a work in p
 Phronima uses an array of 256 bytes as its "memory", with the remaining 29,744 cells of brainf*ck to be used as a stack
 
 # Supported operations
+|compiler   |simulator  |
+|-----------|-----------|
+| - [x] push  | - [x] push  |
+| - [x] pop   | - [x] pop   |
+| - [x] plus  | - [x] plus  |
+| - [x] chout | - [x] chout |
+| - [ ] numout| - [x] numout|
+| - [x] write | - [x] write |
+| - [x] read  | - [x] read  |
+| - [x] mem   | - [x] mem   |
+| - [x] if    | - [x] if    |
+| - [x] end   | - [x] end   |
+| - [ ] else  | - [x] else  |
+| - [ ] while | - [x] while |
+| - [ ] <     | - [x] <     |
+| - [ ] >     | - [x] >     |
+| - [ ] =     | - [x] =     |
+| - [ ] swap  | - [x] swap  |
+| - [ ] dup   | - [x] dup   |
+
 
