@@ -115,9 +115,8 @@ pub fn create_references_for_blocks(parsed_tokens: Vec<Function>) -> Result<Vec<
     let mut parsed_tokens = parsed_tokens;
 
     const IF: u8    = 0;
-    const END: u8   = 1;
-    const ELSE: u8  = 2;
-    const WHILE: u8 = 3;
+    const ELSE: u8  = 1;
+    const WHILE: u8 = 2;
 
     for i in 0..parsed_tokens.len() {
         match parsed_tokens[i] {

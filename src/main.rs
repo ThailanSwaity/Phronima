@@ -9,8 +9,13 @@ use phronima::{ Stack, Function };
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let filepath = "./helloworld.bf";
-    let program: Vec<Function> = read_program_from_file(&filepath).unwrap_or_else(|err| {
+    if args.len() < 3 {
+        eprintln!("Must provide 2 arguments\n['sim', 'com'] and 'filepath'");
+        process::exit(1);
+    }
+
+    let filepath = &args[2];
+    let program: Vec<Function> = read_program_from_file(filepath).unwrap_or_else(|err| {
         eprintln!("Application error: {err}");
         process::exit(1);
     });
@@ -50,9 +55,9 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
 
     // I'm using stack and memory here to assist with memory usage in brainf*ck
     // I have not bothered to try and write an implementation that would allow run-time memory usage
-    const stack_start: usize = 256;
+    const STACK_START: usize = 256;
     let mut stack: Stack = Stack::new();
-    let mut memory: [u8; stack_start] = [0u8; stack_start];
+    let mut memory: [u8; STACK_START] = [0u8; STACK_START];
 
     for _i in 0..255 {
         compiled_code.push('>');
