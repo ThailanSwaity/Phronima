@@ -1,9 +1,17 @@
 # Phronima
-Phronima is a higher-level language for brainf*ck
+Phronima is a stack-based higher-level language for brainf*ck
 
 # Modes 
 There are two modes/subcommands
   - 'com': will compile the source code into brainf*ck code
   - 'sim': will simulate the program created by the source code 
 
-        NOTE: some operations do not currently work in 'compile' mode. Still a work in progress.
+NOTE: some operations do not currently work in 'compile' mode. Still a work in progress.
+
+      cargo run -- sim ./helloworld.bf
+
+# Memory
+Phronima uses an array of 256 bytes as its "memory", with the remaining 29,744 cells of brainf*ck to be used as a stack
+
+# Supported operations
+
