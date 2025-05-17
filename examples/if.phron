@@ -1,0 +1,7 @@
+1 if          // If pops from the stack to read the value
+    84 chout
+end
+
+0 if
+    70 chout
+end
