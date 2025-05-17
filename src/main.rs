@@ -186,10 +186,67 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 todo!("equals compiler code");
             },
             Function::Swap() => {
-                todo!("swap compiler code");
+                compiled_code.push('<');
+                compiled_code.push('[');
+                compiled_code.push('-');
+                compiled_code.push('>');
+                compiled_code.push('>');
+                compiled_code.push('+');
+                compiled_code.push('<');
+                compiled_code.push('<');
+                compiled_code.push(']');
+
+                compiled_code.push('>');
+
+                compiled_code.push('[');
+                compiled_code.push('-');
+                compiled_code.push('<');
+                compiled_code.push('+');
+                compiled_code.push('>');
+                compiled_code.push(']');
+
+                compiled_code.push('>');
+
+                compiled_code.push('[');
+                compiled_code.push('-');
+                compiled_code.push('<');
+                compiled_code.push('+');
+                compiled_code.push('>');
+                compiled_code.push(']');
+
+                compiled_code.push('<');
+
+                let a = stack.pop();
+                let b = stack.pop();
+                stack.push(a);
+                stack.push(b);
             },
             Function::Dup() => {
-                todo!("dup compiler code");
+                compiled_code.push('[');
+                compiled_code.push('-');
+                compiled_code.push('>');
+                compiled_code.push('+');
+                compiled_code.push('>');
+                compiled_code.push('+');
+                compiled_code.push('<');
+                compiled_code.push('<');
+                compiled_code.push(']');
+
+                compiled_code.push('>');
+                compiled_code.push('>');
+                compiled_code.push('[');
+                compiled_code.push('-');
+                compiled_code.push('<');
+                compiled_code.push('<');
+                compiled_code.push('+');
+                compiled_code.push('>');
+                compiled_code.push('>');
+                compiled_code.push(']');
+                compiled_code.push('<');
+
+                let a = stack.pop();
+                stack.push(a);
+                stack.push(a);
             }
         }
     }

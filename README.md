@@ -34,6 +34,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | push  |:heavy_check_mark: | :heavy_check_mark: |
 | pop   |:heavy_check_mark: | :heavy_check_mark:|
 | plus  |:heavy_check_mark: |:heavy_check_mark: |
+| minues| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
 | numout| |:heavy_check_mark: |
 | write |:heavy_check_mark: |:heavy_check_mark: |
@@ -46,8 +47,8 @@ Be careful when writing with this language as it is very easy to cause stack und
 | < (less than)    | |:heavy_check_mark: |
 | > (greater than)    | |:heavy_check_mark: |
 | = (equal to)    | |:heavy_check_mark: |
-| swap  | |:heavy_check_mark: |
-| dup   | |:heavy_check_mark: |
+| swap  |:heavy_check_mark: |:heavy_check_mark: |
+| dup   |:heavy_check_mark: |:heavy_check_mark: |
 
 # Operation descriptions
   todo!
