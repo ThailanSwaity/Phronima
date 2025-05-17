@@ -48,63 +48,69 @@ impl Stack {
     }
 }
 
-pub fn parse_tokens(tokens: Vec<&str>) -> Result<Vec<Function>, Box<dyn Error>> {
+pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>> {
     let mut parsed_tokens: Vec<Function> = vec![];
 
     for token in tokens.iter() {
-        if let Ok(number) = token.parse::<u8>() {
+        if let Ok(number) = token.value.parse::<u8>() {
             parsed_tokens.push(Function::Push(number));
         }
-        else if *token == "pop" {
+        else if token.value == "pop" {
             parsed_tokens.push(Function::Pop());
         }
-        else if *token == "+" {
+        else if token.value == "+" {
             parsed_tokens.push(Function::Plus());
         }
-        else if *token == "chout" {
+        else if token.value== "chout" {
             parsed_tokens.push(Function::CharOut());
         }
-        else if *token == "numout" {
+        else if token.value == "numout" {
             parsed_tokens.push(Function::NumOut());
         }
-        else if *token == "write" {
+        else if token.value == "write" {
             parsed_tokens.push(Function::Write());
         }
-        else if *token == "read" {
+        else if token.value == "read" {
             parsed_tokens.push(Function::Read());
         }
-        else if *token == "mem" {
+        else if token.value == "mem" {
             parsed_tokens.push(Function::Mem());
         }
-        else if *token == "if" {
+        else if token.value == "if" {
             parsed_tokens.push(Function::If(None));
         }
-        else if *token == "end" {
+        else if token.value == "end" {
             parsed_tokens.push(Function::End(None));
         }
-        else if *token == "else" {
+        else if token.value == "else" {
             parsed_tokens.push(Function::Else(None));
         }
-        else if *token == "while" {
+        else if token.value == "while" {
             parsed_tokens.push(Function::While(None));
         }
-        else if *token == "<" {
+        else if token.value == "<" {
             parsed_tokens.push(Function::LessThan());
         }
-        else if *token == ">" {
+        else if token.value == ">" {
             parsed_tokens.push(Function::GreaterThan());
         }
-        else if *token == "=" {
+        else if token.value == "=" {
             parsed_tokens.push(Function::Equals());
         }
-        else if *token == "swap" {
+        else if token.value == "swap" {
             parsed_tokens.push(Function::Swap());
         }
-        else if *token == "dup" {
+        else if token.value == "dup" {
             parsed_tokens.push(Function::Dup());
         }
         else {
-            return Err("Could not parse token '{token}'")?; // Need to improve better error reporting
+            eprintln!("{}:{}:{} could not parse token: '{}'",
+                token.filepath,
+                token.row,
+                token.col,
+                token.value
+            ); // Need to improve better error reporting
+            return Err("Syntax error")?;
         }
     }
     Ok(parsed_tokens)
@@ -158,28 +164,63 @@ pub fn create_references_for_blocks(parsed_tokens: Vec<Function>) -> Result<Vec<
     Ok(parsed_tokens)
 }
 
-pub fn tokenize(source: &String) -> Vec<&str> {
-    let mut tokens: Vec<&str> = vec![];
+#[derive(Debug)]
+pub struct Token<'a> {
+    pub filepath: &'a str,
+    pub row: usize,
+    pub col: usize,
+    pub value: &'a str,
+}
+
+impl<'a> Token<'a> {
+    pub fn new(filepath: &'a str, row: usize, col: usize, value: &'a str) -> Token<'a> {
+        Token { filepath, row, col, value }
+    }
+}
+
+pub fn tokenize_line<'a>(filepath: &'a str, line_number: usize, source: &'a str) -> Vec<Token<'a>> {
+    let mut tokens: Vec<Token> = vec![];
 
     let mut token_start = 0;
     let mut moving_start = true;
 
-    for (i, ch) in source.char_indices() {
+    for (col, ch) in source.char_indices() {
         if moving_start {
+            if col != source.len() - 1 {
+                if &source[col..(col + 2)] == "//" {
+                    return tokens;
+                }
+            }
             if !ch.is_whitespace() {
-                token_start = i;
+                token_start = col;
                 moving_start = false;
             }
         }
         else {
             if ch.is_whitespace() {
-                tokens.push(&source[token_start..i]);
+                let token = Token::new(filepath, line_number, token_start + 1, &source[token_start..col]);
+                tokens.push(token);
                 moving_start = true;
             }
         }
-        if i == source.len() - 1 && ch.is_alphanumeric() {
-            tokens.push(&source[token_start..(i + 1)]);
+        if col == source.len() - 1 && !ch.is_whitespace() {
+            let token = Token::new(filepath, line_number, token_start + 1, &source[token_start..(col + 1)]);
+            tokens.push(token);
         }
+    }
+    tokens
+}
+
+pub fn tokenize_file<'a>(filepath: &'a str, source: &'a String) -> Vec<Token<'a>> {
+    let mut tokens: Vec<Token> = vec![];
+
+    let mut line_number = 1;
+    for line in source.lines() {
+        let temp_tokens = tokenize_line(filepath, line_number, line);
+        for token in temp_tokens {
+            tokens.push(token);
+        }
+        line_number += 1;
     }
     tokens
 }
@@ -192,7 +233,8 @@ mod test {
     fn tokenize_test() {
         let test_source = "  34 43    67".to_string();
 
-        let tokens = tokenize(&test_source);
+        let filepath = "file.test";
+        let tokens = tokenize_file(&filepath, &test_source);
         assert_eq!(vec!["34", "43", "67"], tokens);
     }
 

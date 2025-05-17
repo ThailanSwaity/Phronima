@@ -1,1 +1,3 @@
-73 74 swap dup chout chout chout
+1 3 + if 
+
+end 1

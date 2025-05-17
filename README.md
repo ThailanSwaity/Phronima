@@ -1,5 +1,5 @@
 # Phronima
-Phronima is a stack-based higher-level language for brainf*ck
+Phronima is a stack-based high(er)-level language for brainf*ck
 
 # Intro 
 What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an esoteric programming language modelled after the [Turing Machine](https://en.wikipedia.org/wiki/Turing_machine)
@@ -7,8 +7,8 @@ What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an es
 - [x] [Hello, world!](./examples/hellowrold.bf)
 - [x] ([if, end](./examples/if.bf)) Control flow operators (if, else, while)
 - [ ] Character input, number input, string input
-- [ ] Verbose compiler errors
-- [ ] Comments
+- [x] Verbose code syntax errors
+- [x] Comments
 - [ ] Strings
 - [ ] Optimize compiled brainf*ck
 - [ ] Turing completeness
@@ -23,7 +23,7 @@ NOTE: some operations do not currently work in 'compile' mode. Still a work in p
       cargo run -sim ./helloworld.bf
 
 # Memory
-Phronima uses an array of 256 bytes as its "memory", with the remaining 29,744 cells of brainf*ck to be used as a stack
+Phronima uses an array of 256 bytes as its addressable "memory", with the remaining 29,744 cells of brainf*ck to be used as a stack
 
 There is no type system implemented and I only plan on having two: byte and pointer.
 Be careful when writing with this language as it is very easy to cause stack underflow

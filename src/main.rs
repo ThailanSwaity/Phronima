@@ -38,7 +38,7 @@ fn main() {
 
 fn read_program_from_file(filepath: &str) -> Result<Vec<Function>, Box<dyn Error>> {
     let source = fs::read_to_string(filepath)?;
-    let tokens = phronima::tokenize(&source);
+    let tokens = phronima::tokenize_file(filepath, &source);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let program = phronima::create_references_for_blocks(parsed_tokens)?;
     Ok(program)
@@ -310,8 +310,6 @@ fn simulate_program(program: Vec<Function>) {
                 if a == 0 {
                     i = index.unwrap();
                     continue;
-                } else {
-                    stack.push(a);
                 }
             }
             Function::LessThan() => {
