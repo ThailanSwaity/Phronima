@@ -34,7 +34,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | push  |:heavy_check_mark: | :heavy_check_mark: |
 | pop   |:heavy_check_mark: | :heavy_check_mark:|
 | plus  |:heavy_check_mark: |:heavy_check_mark: |
-| minues| | |
+| minus| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
 | numout| |:heavy_check_mark: |
 | write |:heavy_check_mark: |:heavy_check_mark: |
