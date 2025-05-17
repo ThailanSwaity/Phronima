@@ -4,7 +4,7 @@ Phronima is a stack-based high(er)-level language for brainf*ck
 # Intro 
 What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an esoteric programming language modelled after the [Turing Machine](https://en.wikipedia.org/wiki/Turing_machine)
 # Goals 
-- [x] [Hello, world!](./examples/hellowrold.bf)
+- [x] [Hello, world!](./examples/helloworld.bf)
 - [x] ([if, end](./examples/if.bf)) Control flow operators (if, else, while)
 - [ ] Character input, number input, string input
 - [x] Verbose code syntax errors
