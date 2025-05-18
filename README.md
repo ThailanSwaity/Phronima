@@ -37,7 +37,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | push  |:heavy_check_mark: | :heavy_check_mark: |
 | pop   |:heavy_check_mark: | :heavy_check_mark:|
 | plus  |:heavy_check_mark: |:heavy_check_mark: |
-| minus| | |
+| minus|:heavy_check_mark: |:heavy_check_mark: |
 | modulo| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
 | numout| |:heavy_check_mark: |
@@ -73,7 +73,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | =| a b -> 1 if a = b else 0|
 
 ## Memory
-| |stack Behaviour|
+| |Stack Behaviour|
 |-|-----------|
 | read| a -> pops a from the stack, pushes byte at memory address a to the stack |
 | write| a b -> pops a and b from the stack, writes b to address a |
@@ -82,7 +82,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | |Stack Behaviour|
 |-|-----------|
 | if, else, end| a -> pops a from the stack, executes if block if a > 0, executes else block if a = 0|
-|while, end| a -> pops a from the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0, otherwise |
+|while, end| a -> pops a from the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0|
 
 ## Bit manipulation
 To be implemented
