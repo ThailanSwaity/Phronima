@@ -57,7 +57,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 # Operation descriptions
 
 ## Stack
-| |stack effects|
+| |Stack Behaviour|
 |-|-----------|
 | push| a -> a b|
 | pop | a b -> a|
@@ -65,7 +65,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | swap| a b -> b a|
 
 ## Math 
-| |stack effects|
+| |Stack Behaviour|
 |-|-----------|
 | +| a b -> (a+b) |
 | >| a b -> 1 if a > b else 0  |
@@ -73,13 +73,13 @@ Be careful when writing with this language as it is very easy to cause stack und
 | =| a b -> 1 if a = b else 0|
 
 ## Memory
-| |stack effects|
+| |stack Behaviour|
 |-|-----------|
 | read| a -> pops a from the stack, pushes byte at memory address a to the stack |
 | write| a b -> pops a and b from the stack, writes b to address a |
 
 ## Control flow
-| |stack effects|
+| |Stack Behaviour|
 |-|-----------|
 | if, else, end| a -> pops a from the stack, executes if block if a > 0, executes else block if a = 0|
 |while, end| a -> pops a from the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0, otherwise |
