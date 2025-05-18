@@ -38,6 +38,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | pop   |:heavy_check_mark: | :heavy_check_mark:|
 | plus  |:heavy_check_mark: |:heavy_check_mark: |
 | minus| | |
+| modulo| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
 | numout| |:heavy_check_mark: |
 | write |:heavy_check_mark: |:heavy_check_mark: |
@@ -54,4 +55,34 @@ Be careful when writing with this language as it is very easy to cause stack und
 | dup   |:heavy_check_mark: |:heavy_check_mark: |
 
 # Operation descriptions
-  todo!
+
+## Stack
+| |stack effects|
+|-|-----------|
+| push| a -> a b|
+| pop | a b -> a|
+| dup | a -> a a |
+| swap| a b -> b a|
+
+## Math 
+| |stack effects|
+|-|-----------|
+| +| a b -> (a+b) |
+| >| a b -> 1 if a > b else 0  |
+| <| a b -> 1 if a < b else 0|
+| =| a b -> 1 if a = b else 0|
+
+## Memory
+| |stack effects|
+|-|-----------|
+| read| a -> pops a from the stack, pushes byte at memory address a to the stack |
+| write| a b -> pops a and b from the stack, writes b to address a |
+
+## Control flow
+| |stack effects|
+|-|-----------|
+| if, else, end| a -> pops a from the stack, executes if block if a > 0, executes else block if a = 0|
+|while, end| a -> pops a from the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0, otherwise |
+
+## Bit manipulation
+To be implemented
