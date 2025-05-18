@@ -7,11 +7,13 @@ What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an es
 - [x] [Hello, world!](./examples/helloworld.phron)
 - [x] ([if, end](./examples/if.phron)) Control flow operators (if, else, while)
 - [ ] Character input, number input, string input
+- [ ] Named pointers (variables)
 - [x] Verbose code syntax errors
 - [x] Comments
 - [ ] Strings
 - [ ] Optimize compiled brainf*ck
 - [ ] Turing completeness
+- [ ] Interpreter with graphics library (will be separate project)
 
 # Modes 
 There are two modes/subcommands
@@ -36,8 +38,9 @@ Be careful when writing with this language as it is very easy to cause stack und
 |------------|-----------|-----------|
 | push  |:heavy_check_mark: | :heavy_check_mark: |
 | pop   |:heavy_check_mark: | :heavy_check_mark:|
-| plus  |:heavy_check_mark: |:heavy_check_mark: |
-| minus|:heavy_check_mark: |:heavy_check_mark: |
+| + (addition)  |:heavy_check_mark: |:heavy_check_mark: |
+| - (subtraction)|:heavy_check_mark: |:heavy_check_mark: |
+| * (multiplication) |:heavy_check_mark:|:heavy_check_mark:|
 | modulo| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
 | numout| |:heavy_check_mark: |
@@ -68,6 +71,8 @@ Be careful when writing with this language as it is very easy to cause stack und
 | |Stack Behaviour|
 |-|-----------|
 | +| a b -> (a+b) |
+| -| a b -> (a-b) |
+| *| a b -> (a*b) |
 | >| a b -> 1 if a > b else 0  |
 | <| a b -> 1 if a < b else 0|
 | =| a b -> 1 if a = b else 0|

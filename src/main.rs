@@ -108,6 +108,13 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 let a = stack.pop();
                 stack.push(a - b);
             },
+            Function::Mult() => {
+                compiled_code.push_str("<[->>+<<]>[->[->+<<<+>>]>[-<+>]<<]>[-]<<");
+
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push(a * b);
+            },
             Function::CharOut() => {
                 compiled_code.push('.');
                 compiled_code.push('[');
@@ -290,6 +297,11 @@ fn simulate_program(program: Vec<Function>) {
                 let b = stack.pop();
                 let a = stack.pop();
                 stack.push(a - b);
+            },
+            Function::Mult() => {
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push(a * b);
             },
             Function::CharOut() => {
                 print!("{}", stack.pop() as char);

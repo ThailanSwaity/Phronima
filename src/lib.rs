@@ -7,6 +7,7 @@ pub enum Function {
     Pop(),
     Plus(),
     Minus(),
+    Mult(),
     NumOut(),
     CharOut(),
     Write(),
@@ -64,6 +65,9 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
         }
         else if token.value == "-" {
             parsed_tokens.push(Function::Minus());
+        }
+        else if token.value == "*" {
+            parsed_tokens.push(Function::Mult());
         }
         else if token.value == "chout" {
             parsed_tokens.push(Function::CharOut());
