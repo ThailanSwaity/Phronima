@@ -130,7 +130,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
             Function::Write() => {
 
                 // We do not use the brainf*ck memory for run-time. But we can use it for
-                // compile-time for printing strings
+                // compile-time and for printing strings
                 compiled_code.push('[');
                 compiled_code.push('-');
                 compiled_code.push(']');
@@ -169,6 +169,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 let addr = stack.pop();
 
                 let byte = memory[addr as usize];
+                println!("byte: {}", byte);
 
                 compiled_code.push('>');
                 for _i in 0..byte {
@@ -182,20 +183,25 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
             },
             Function::If(_index) => {
                 compiled_code.push('[');
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
             },
-            Function::End(_index) => {
-                compiled_code.push('>');
-                compiled_code.push(']');
-                compiled_code.push('<');
+            Function::End(index) => {
+
+                match program[index.unwrap()] {
+                    Function::While(_index) => {
+                        compiled_code.push(']');
+                    },
+                    _ => {
+                        compiled_code.push_str(">]<"); // This moves the cell pointer to a block
+                        // with a value of 0 to ensure the if block never executes more than once
+                    },
+                }
+
             },
             Function::Else(_index) => {
                 todo!("else compiler code");
             },
             Function::While(_index) => {
-                todo!("while compiler code");
+                compiled_code.push_str("[");
             }
             Function::LessThan() => {
                 todo!("lessthan compiler code");
@@ -323,6 +329,7 @@ fn simulate_program(program: Vec<Function>) {
             },
             Function::If(index) => {
                 let a = stack.pop();
+                stack.push(a);
                 if a == 0 {
                     i = index.unwrap();
                     continue;
@@ -338,6 +345,7 @@ fn simulate_program(program: Vec<Function>) {
             },
             Function::While(index) => {
                 let a = stack.pop();
+                stack.push(a);
                 if a == 0 {
                     i = index.unwrap();
                     continue;

@@ -50,7 +50,7 @@ Be careful when writing with this language as it is very easy to cause stack und
 | if    |:heavy_check_mark: |:heavy_check_mark: |
 | end   |:heavy_check_mark: |:heavy_check_mark: |
 | else  | |:heavy_check_mark: |
-| while | |:heavy_check_mark: |
+| while |:heavy_check_mark: |:heavy_check_mark: |
 | < (less than)    | |:heavy_check_mark: |
 | > (greater than)    | |:heavy_check_mark: |
 | = (equal to)    | |:heavy_check_mark: |
@@ -86,8 +86,8 @@ Be careful when writing with this language as it is very easy to cause stack und
 ## Control flow
 | |Stack Behaviour|
 |-|-----------|
-| if, else, end| a -> pops a from the stack, executes if block if a > 0, executes else block if a = 0|
-|while, end| a -> pops a from the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0|
+| if, else, end| a -> reads top of the stack, executes if block if a > 0, executes else block if a = 0|
+|while, end| a -> reads top of the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0|
 
 ## Bit manipulation
 To be implemented

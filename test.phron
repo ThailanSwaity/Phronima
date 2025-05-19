@@ -1,1 +1,8 @@
-9 8 * chout
+74 while 
+    dup
+    1 if
+        chout
+    end
+    pop 
+    1 -
+end
