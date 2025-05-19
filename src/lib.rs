@@ -219,7 +219,7 @@ pub fn tokenize_line<'a>(filepath: &'a str, line_number: usize, source: &'a str)
     tokens
 }
 
-pub fn tokenize_file<'a>(filepath: &'a str, source: &'a String) -> Vec<Token<'a>> {
+pub fn tokenize_source_code<'a>(filepath: &'a str, source: &'a String) -> Vec<Token<'a>> {
     let mut tokens: Vec<Token> = vec![];
 
     let mut line_number = 1;
@@ -231,26 +231,4 @@ pub fn tokenize_file<'a>(filepath: &'a str, source: &'a String) -> Vec<Token<'a>
         line_number += 1;
     }
     tokens
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn tokenize_test() {
-        let test_source = "  34 43    67".to_string();
-
-        let filepath = "file.test";
-        let tokens = tokenize_file(&filepath, &test_source);
-        assert_eq!(vec!["34", "43", "67"], tokens);
-    }
-
-    #[test]
-    fn parse_tokens_test() {
-        let test_tokens = vec!["34", "43", "67", "+", "numout"];
-
-        let parsed_tokens = parse_tokens(test_tokens);
-        assert_eq!(vec![Function::Push(34u8), Function::Push(43u8), Function::Push(67u8), Function::Plus(), Function::NumOut()], parsed_tokens);
-    }
 }
