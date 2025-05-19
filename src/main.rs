@@ -100,35 +100,19 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 stack.push(byte);
             },
             Function::Pop() => {
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[-]<");
 
                 stack.pop();
             },
             Function::Plus() => {
-                compiled_code.push('[');
-                compiled_code.push('<');
-                compiled_code.push('+');
-                compiled_code.push('>');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[<+>-]<");
 
                 let a = stack.pop();
                 let b = stack.pop();
                 stack.push(a + b);
             },
             Function::Minus() => {
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('<');
-                compiled_code.push('-');
-                compiled_code.push('>');
-                compiled_code.push(']');
-
-                compiled_code.push('<');
+                compiled_code.push_str("[-<->]<");
 
                 let b = stack.pop();
                 let a = stack.pop();
@@ -142,11 +126,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 stack.push(a * b);
             },
             Function::CharOut() => {
-                compiled_code.push('.');
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str(".[-]<");
 
                 stack.pop();
             },
@@ -157,16 +137,10 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
 
                 // We do not use the brainf*ck memory for run-time. But we can use it for
                 // compile-time and for printing strings
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[-]<");
                 let byte = stack.pop();
 
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[-]<");
                 let addr = stack.pop();
 
                 for _i in 0..(255 + stack.top - addr as usize) {
@@ -174,9 +148,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 }
 
                 // We know the value at this address but it is still more concise to write it this way
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
+                compiled_code.push_str("[-]");
 
                 for _i in 0..byte {
                     compiled_code.push('+');
@@ -188,10 +160,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 memory[addr as usize] = byte;
             },
             Function::Read() => {
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[-]<");
                 let addr = stack.pop();
 
                 let byte = memory[addr as usize];
@@ -245,35 +214,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 todo!("equals compiler code");
             },
             Function::Swap() => {
-                compiled_code.push('<');
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('>');
-                compiled_code.push('>');
-                compiled_code.push('+');
-                compiled_code.push('<');
-                compiled_code.push('<');
-                compiled_code.push(']');
-
-                compiled_code.push('>');
-
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('<');
-                compiled_code.push('+');
-                compiled_code.push('>');
-                compiled_code.push(']');
-
-                compiled_code.push('>');
-
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('<');
-                compiled_code.push('+');
-                compiled_code.push('>');
-                compiled_code.push(']');
-
-                compiled_code.push('<');
+                compiled_code.push_str("<[->>+<<]>[-<+>]>[-<+>]<");
 
                 let a = stack.pop();
                 let b = stack.pop();
@@ -281,27 +222,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 stack.push(b);
             },
             Function::Dup() => {
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('>');
-                compiled_code.push('+');
-                compiled_code.push('>');
-                compiled_code.push('+');
-                compiled_code.push('<');
-                compiled_code.push('<');
-                compiled_code.push(']');
-
-                compiled_code.push('>');
-                compiled_code.push('>');
-                compiled_code.push('[');
-                compiled_code.push('-');
-                compiled_code.push('<');
-                compiled_code.push('<');
-                compiled_code.push('+');
-                compiled_code.push('>');
-                compiled_code.push('>');
-                compiled_code.push(']');
-                compiled_code.push('<');
+                compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
 
                 let a = stack.pop();
                 stack.push(a);
