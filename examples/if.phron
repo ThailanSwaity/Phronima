@@ -1,7 +1,9 @@
-1 if          // If pops from the stack to read the value
+1 if          // If used to pop from the stack
     84 chout
 end
+pop
 
 0 if
     70 chout
 end
+pop
