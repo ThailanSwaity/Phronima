@@ -134,42 +134,90 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 todo!("numout compiler code");
             },
             Function::Write() => {
-
-                // We do not use the brainf*ck memory for run-time. But we can use it for
-                // compile-time and for printing strings
-                compiled_code.push_str("[-]<");
+                // As a better alternative, we want the address pointer to be constant during loops instead
+                // of the address value
+                
+                // So while popping the byte value, we want to copy it to the address in memory
+                // instead of hardcoding the value
                 let byte = stack.pop();
 
-                compiled_code.push_str("[-]<");
                 let addr = stack.pop();
 
-                for _i in 0..(255 + stack.top - addr as usize) {
+                // In the brainfuck code, the address and byte haven't been popped yet
+                let stack_top: usize = stack.top + 2;
+
+                // First we have to set the value at the address to 0
+                for _i in 0..(255 + stack_top - addr as usize) {
                     compiled_code.push('<');
                 }
-
-                // We know the value at this address but it is still more concise to write it this way
                 compiled_code.push_str("[-]");
-
-                for _i in 0..byte {
-                    compiled_code.push('+');
-                }
-                for _i in 0..(255 + stack.top - addr as usize) {
+                for _i in 0..(255 + stack_top - addr as usize) {
                     compiled_code.push('>');
                 }
+
+                // This copies the value from the top of the stack to the memory address
+                compiled_code.push_str("[-");
+                for _i in 0..(255 + stack_top - addr as usize) {
+                    compiled_code.push('<');
+                }
+                compiled_code.push('+');
+                for _i in 0..(255 + stack_top - addr as usize) {
+                    compiled_code.push('>');
+                }
+                compiled_code.push_str("]<");
+
+                // This pops the address from the stack, we do not need to copy the address pointer
+                compiled_code.push_str("[-]<");
 
                 memory[addr as usize] = byte;
             },
             Function::Read() => {
+                // The read must copy the value into two places first
+
                 compiled_code.push_str("[-]<");
                 let addr = stack.pop();
 
                 let byte = memory[addr as usize];
 
                 compiled_code.push('>');
-                for _i in 0..byte {
-                    compiled_code.push('+');
-                }
                 stack.push(byte);
+
+                for _i in 0..(255 + stack.top - addr as usize) {
+                    compiled_code.push('<');
+                }
+                compiled_code.push_str("[-");
+                for _i in 0..(255 + stack.top - addr as usize) {
+                    compiled_code.push('>');
+                }
+                compiled_code.push('+');
+                for _i in 0..(255 + stack.top) {
+                    compiled_code.push('<');
+                }
+                compiled_code.push('+');
+                for _i in 0..(addr as usize) {
+                    compiled_code.push('>');
+                }
+                compiled_code.push(']');
+                
+                // Finished copying value onto stack. We now have to copy the value back into the
+                // original address
+                for _i in 0..(addr as usize) {
+                    compiled_code.push('<');
+                }
+                compiled_code.push_str("[-");
+                for _i in 0..(addr as usize) {
+                    compiled_code.push('>');
+                }
+                compiled_code.push('+');
+                for _i in 0..(addr as usize) {
+                    compiled_code.push('<');
+                }
+                compiled_code.push(']');
+
+                // Go back to top of stack
+                for _i in 0..(255 + stack.top) {
+                    compiled_code.push('>');
+                }
             },
             Function::Mem() => {
                 compiled_code.push('>');

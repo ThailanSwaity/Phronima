@@ -33,6 +33,9 @@ Phronima uses an array of 256 bytes as its addressable "memory", with the remain
 There is no type system implemented and I only plan on having two: byte and pointer.
 Be careful when writing with this language as it is very easy to cause stack underflow
 
+Memory can be read during run-time through the use of static compile-time pointers.
+The address assigned to a read or write operation cannot change at run-time (this will lead to undefined behaviour of the brainf*ck program), but the byte value can (this was previously the other way around, but I think this is much better)
+
 # Supported operations
 | operation|compiler   |simulator  |
 |------------|-----------|-----------|
