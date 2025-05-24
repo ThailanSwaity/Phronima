@@ -5,7 +5,7 @@ Phronima is a stack-based high(er)-level language for brainf*ck
 What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an esoteric programming language modelled after the [Turing Machine](https://en.wikipedia.org/wiki/Turing_machine)
 # Goals 
 - [x] [Hello, world!](./examples/helloworld.phron)
-- [x] ([if, end](./examples/if.phron), [while](./examples/while.phron)) Control flow operators (if, else, while)
+- [x] ([if, else, end](./examples/if.phron), [while](./examples/while.phron)) Control flow operators (if, else, while)
 - [ ] Character input, number input, string input
 - [ ] Named pointers (variables)
 - [x] Verbose code syntax errors
@@ -52,18 +52,19 @@ The address assigned to a read or write operation cannot change at run-time (thi
 | mem   |:heavy_check_mark: |:heavy_check_mark: |
 | if    |:heavy_check_mark: |:heavy_check_mark: |
 | end   |:heavy_check_mark: |:heavy_check_mark: |
-| else  | |:heavy_check_mark: |
+| else  |:heavy_check_mark: |:heavy_check_mark: |
 | while |:heavy_check_mark: |:heavy_check_mark: |
 | < (less than)    | |:heavy_check_mark: |
 | > (greater than)    | |:heavy_check_mark: |
 | = (equal to)    | |:heavy_check_mark: |
 | swap  |:heavy_check_mark: |:heavy_check_mark: |
 | dup   |:heavy_check_mark: |:heavy_check_mark: |
+| not (BITWISE) |:heavy_check_mark: |:heavy_check_mark: |
 
 # Operation descriptions
 
 ## Stack
-| |Stack Behaviour|
+| operation |Stack Behaviour|
 |-|-----------|
 | push| a -> a b|
 | pop | a b -> a|
@@ -71,7 +72,7 @@ The address assigned to a read or write operation cannot change at run-time (thi
 | swap| a b -> b a|
 
 ## Math 
-| |Stack Behaviour|
+| operation|Stack Behaviour|
 |-|-----------|
 | +| a b -> (a+b) |
 | -| a b -> (a-b) |
@@ -81,16 +82,19 @@ The address assigned to a read or write operation cannot change at run-time (thi
 | =| a b -> 1 if a = b else 0|
 
 ## Memory
-| |Stack Behaviour|
+| operation|Stack Behaviour|
 |-|-----------|
 | read| a -> pops a from the stack, pushes byte at memory address a to the stack |
 | write| a b -> pops a and b from the stack, writes b to address a |
 
 ## Control flow
-| |Stack Behaviour|
+| operation|Stack Behaviour|
 |-|-----------|
 | if, else, end| a -> reads top of the stack, executes if block if a > 0, executes else block if a = 0|
 |while, end| a -> reads top of the stack, executes while block if a > 0, repeats when the end of the loop is reached if the value at the top of the stack is greater than 0|
 
 ## Bit manipulation
-To be implemented
+| operation|Stack Behaviour|
+|-|-----------|
+| not| a -> pops a from the stack and pushes (1 - a) wrapped to 8 bits|
+

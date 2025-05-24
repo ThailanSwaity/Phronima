@@ -228,7 +228,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
             },
             Function::End(index) => {
                 if index.unwrap() == program.len() {
-                    compiled_code.push(']');
+                    compiled_code.push_str(">]<");
                 }
                 else if index.unwrap() > program.len() {
                     eprintln!("Something really not great happened here...");
@@ -247,7 +247,15 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 }
             },
             Function::Else(_index) => {
-                todo!("else compiler code");
+                compiled_code.push_str(">]<");
+
+                compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
+                let byte = stack.pop();
+
+                let not_byte = 1u8.wrapping_sub(byte);
+                stack.push(not_byte);
+
+                compiled_code.push('[');
             },
             Function::While(_index) => {
                 compiled_code.push_str("[");
@@ -275,7 +283,14 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 let a = stack.pop();
                 stack.push(a);
                 stack.push(a);
-            }
+            },
+            Function::Not() => {
+                compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
+                let byte = stack.pop();
+
+                let not_byte = 1u8.wrapping_sub(byte);
+                stack.push(not_byte);
+            },
         }
     }
     Ok(compiled_code)
@@ -392,7 +407,13 @@ fn simulate_program(program: Vec<Function>) {
                 let a = stack.pop();
                 stack.push(a);
                 stack.push(a);
-            }
+            },
+            Function::Not() => {
+                let byte = stack.pop();
+
+                let not_byte = 1u8.wrapping_sub(byte);
+                stack.push(not_byte);
+            },
         }
         i += 1;
     }
@@ -515,5 +536,15 @@ mod test {
     #[test]
     fn dup_op() {
         assert!(test("dup"));
+    }
+
+    #[test]
+    fn else_op() {
+        assert!(test("else"));
+    }
+
+    #[test]
+    fn not_op() {
+        assert!(test("not"));
     }
 }

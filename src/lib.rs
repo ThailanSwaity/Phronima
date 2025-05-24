@@ -22,6 +22,7 @@ pub enum Function {
     Equals(),
     Swap(),
     Dup(),
+    Not(),
 }
 
 #[derive(Debug)]
@@ -110,6 +111,9 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
         }
         else if token.value == "dup" {
             parsed_tokens.push(Function::Dup());
+        }
+        else if token.value == "not" {
+            parsed_tokens.push(Function::Not())
         }
         else {
             eprintln!("{}:{}:{} could not parse token: '{}'",
