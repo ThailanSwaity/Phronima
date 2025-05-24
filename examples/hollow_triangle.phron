@@ -1,0 +1,36 @@
+// I would like to make a loop that counts up instead of down.
+// This will be tricky without any integer comparison functions
+// 
+// Nevermind, it was pretty simple, however it will be slow because of all of the memory accesses
+
+35 chout
+10 chout
+35 35 chout chout
+10 chout
+
+mem 1 + 20 write
+mem 0 write
+mem 1 + read while
+    mem read 
+    1 +
+    35 chout
+    dup while 
+        32 chout
+        1 -
+    end
+    35 chout
+    pop
+    10 chout
+    mem swap write 
+
+    1 -
+end
+pop
+
+mem 1 + read 3 + while 
+    35 chout
+    1 -
+end
+pop
+
+10 chout

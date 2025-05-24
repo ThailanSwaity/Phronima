@@ -1,0 +1,11 @@
+// This program sums integers 1 to 21 and prints
+// the corresponding ascii character
+
+21 while 
+    dup mem read +
+    mem swap write
+
+    1 -
+end
+pop
+mem read chout

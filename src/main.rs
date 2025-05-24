@@ -220,8 +220,8 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 }
             },
             Function::Mem() => {
-                compiled_code.push('>');
-                stack.push(0u8);
+                compiled_code.push_str(">+");
+                stack.push(1u8);
             },
             Function::If(_index) => {
                 compiled_code.push('[');
@@ -326,7 +326,7 @@ fn simulate_program(program: Vec<Function>) {
                 stack.push(memory[a as usize]);
             },
             Function::Mem() => {
-                stack.push(0u8);
+                stack.push(1u8);
             },
             Function::If(index) => {
                 let a = stack.pop();

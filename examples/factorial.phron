@@ -1,0 +1,12 @@
+// This program computes 5! (NOTE: anything higher would cause integer overflow)
+
+mem 1 write
+5 while
+    dup mem read *
+    mem swap write
+
+    1 -
+end
+pop
+
+mem read chout
