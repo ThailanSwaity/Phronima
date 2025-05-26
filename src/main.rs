@@ -5,6 +5,7 @@ use std::io;
 use std::env;
 use std::process;
 use std::error::Error;
+use std::collections::HashMap;
 use phronima::{ Stack, Function };
 
 fn main() {
@@ -14,7 +15,7 @@ fn main() {
     if &args[1] == "sim" || &args[1] == "com" {
         check_args(args.len());
         let filepath = &args[2];
-        let program: Vec<Function> = read_program_from_file(filepath).unwrap_or_else(|err| {
+        let program: HashMap<String, Vec<Function>> = read_program_from_file(filepath).unwrap_or_else(|err| {
             eprintln!("Application error: {err}");
             process::exit(1);
         });
@@ -48,11 +49,15 @@ fn check_args(num_args: usize) {
     }
 }
 
-fn read_program_from_file(filepath: &str) -> Result<Vec<Function>, Box<dyn Error>> {
+fn read_program_from_file(filepath: &str) -> Result<HashMap<String, Vec<Function>>, Box<dyn Error>> {
     let source = fs::read_to_string(filepath)?;
     let tokens = phronima::tokenize_source_code(filepath, &source);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
-    let program = phronima::create_references_for_blocks(parsed_tokens)?;
+    let mut program = phronima::parse_program_structure(parsed_tokens)?;
+    for (fname, fblock) in &mut program {
+        phronima::create_references_for_blocks(fblock);
+    }
+    println!("{:?}", program);
     Ok(program)
 }
 
@@ -65,7 +70,10 @@ fn compile_program_from_file(filepath: &str) -> Result<String, Box<dyn Error>> {
 fn compile_program_from_source(filepath: &str, source_code: String) -> Result<String, Box<dyn Error>> {
     let tokens = phronima::tokenize_source_code(filepath, &source_code);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
-    let program = phronima::create_references_for_blocks(parsed_tokens)?;
+    let mut program = phronima::parse_program_structure(parsed_tokens)?;
+    for (fname, fblock) in &mut program {
+        phronima::create_references_for_blocks(fblock);
+    }
     let bf_code = compile_program(program)?;
     Ok(bf_code)
 }
@@ -76,8 +84,9 @@ fn write_program_to_file(filepath: &str, compiled_code: String) -> Result<(), Bo
     Ok(())
 }
 
-fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
+fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Box<dyn Error>> {
     let mut compiled_code: String = String::from("");
+    let program = program.get("main").unwrap();
 
     // I'm using stack and memory here to assist with memory usage in brainf*ck
     // I have not bothered to try and write an implementation that would allow run-time memory usage
@@ -246,6 +255,7 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                     }
                 }
             },
+            // TODO: fix the behaviour of if and else incorrectly moving the stack
             Function::Else(_index) => {
                 compiled_code.push_str(">]<");
 
@@ -291,13 +301,20 @@ fn compile_program(program: Vec<Function>) -> Result<String, Box<dyn Error>> {
                 let not_byte = 1u8.wrapping_sub(byte);
                 stack.push(not_byte);
             },
+            Function::FunctionDeclaration(_) => {
+                println!("This shouldn't be reachable");
+            },
+            Function::FunctionCall(_) => {
+                println!("Function called");
+            }
         }
     }
     Ok(compiled_code)
 }
 
-fn simulate_program(program: Vec<Function>) {
+fn simulate_program(program: HashMap<String, Vec<Function>>) {
     let mut stack: Stack = Stack::new();
+    let program = program.get("main").unwrap();
 
     let mut memory: [u8; 256] = [0u8; 256];
 
@@ -414,6 +431,12 @@ fn simulate_program(program: Vec<Function>) {
                 let not_byte = 1u8.wrapping_sub(byte);
                 stack.push(not_byte);
             },
+            Function::FunctionDeclaration(_) => {
+                println!("This shouldn't be reachable");
+            },
+            Function::FunctionCall(_) => {
+                println!("Function call");
+            }
         }
         i += 1;
     }

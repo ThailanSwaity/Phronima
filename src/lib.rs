@@ -1,7 +1,7 @@
 use std::error::Error;
+use std::collections::HashMap;
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Function {
     Push(u8),
     Pop(),
@@ -23,6 +23,8 @@ pub enum Function {
     Swap(),
     Dup(),
     Not(),
+    FunctionDeclaration(String),
+    FunctionCall(String),
 }
 
 #[derive(Debug)]
@@ -54,7 +56,9 @@ impl Stack {
 pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>> {
     let mut parsed_tokens: Vec<Function> = vec![];
 
-    for token in tokens.iter() {
+    let mut token_iter = tokens.iter();
+
+    while let Some(token) = token_iter.next() {
         if let Ok(number) = token.value.parse::<u8>() {
             parsed_tokens.push(Function::Push(number));
         }
@@ -113,9 +117,17 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             parsed_tokens.push(Function::Dup());
         }
         else if token.value == "not" {
-            parsed_tokens.push(Function::Not())
+            parsed_tokens.push(Function::Not());
+        }
+        else if token.value == "fn" {
+            if let Some(token) = token_iter.next() {
+                parsed_tokens.push(Function::FunctionDeclaration(token.value.to_string()));
+            }
         }
         else {
+            parsed_tokens.push(Function::FunctionCall(token.value.to_string()));
+
+            /*
             eprintln!("{}:{}:{} could not parse token: '{}'",
                 token.filepath,
                 token.row,
@@ -123,18 +135,75 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
                 token.value
             ); // Need to improve better error reporting
             return Err("Syntax error")?;
+            */
         }
     }
     Ok(parsed_tokens)
 }
 
-pub fn create_references_for_blocks(parsed_tokens: Vec<Function>) -> Result<Vec<Function>, Box<dyn Error>> {
-    let mut block_tokens: Vec<(usize, u8)> = vec![];
-    let mut parsed_tokens = parsed_tokens;
+pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<HashMap<String, Vec<Function>>, Box<dyn Error>> {
+    let mut program: HashMap<String, Vec<Function>> = HashMap::new();
 
-    const IF: u8    = 0;
-    const ELSE: u8  = 1;
-    const WHILE: u8 = 2;
+    let mut block_tokens: Vec<(usize, u8)> = Vec::new();
+    let mut function_tokens: Vec<Function> = Vec::new();
+
+    let mut function_name: String = String::new();
+
+    const IF: u8      = 0;
+    const ELSE: u8    = 1;
+    const WHILE: u8   = 2;
+    const FUNCDEF: u8 = 3;
+
+    for i in 0..parsed_tokens.len() {
+        match &parsed_tokens[i] {
+            Function::If(_reference) => {
+                block_tokens.push((i, IF));
+                function_tokens.push(parsed_tokens[i].clone());
+            },
+            Function::Else(_reference) => {
+                block_tokens.push((i, ELSE));
+                function_tokens.push(parsed_tokens[i].clone());
+            }
+            Function::While(_reference) => {
+                block_tokens.push((i, WHILE));
+                function_tokens.push(parsed_tokens[i].clone());
+            }
+            Function::FunctionDeclaration(fname) => {
+                function_name = fname.to_string();
+                block_tokens.push((i, FUNCDEF));
+            },
+            Function::End(_reference) => {
+                let (index, block_word_type) = block_tokens[block_tokens.len() - 1];
+                if block_word_type == FUNCDEF {
+                    program.insert(function_name, function_tokens);
+                    function_tokens = Vec::new();
+                    function_name = String::new();
+                }
+                else if block_word_type == ELSE{
+                    let _tk = block_tokens.pop();
+                    let _tk = block_tokens.pop();
+                    function_tokens.push(parsed_tokens[i].clone());
+                }
+                else {
+                    let _tk = block_tokens.pop();
+                    function_tokens.push(parsed_tokens[i].clone());
+                }
+            },
+            _ => {
+                function_tokens.push(parsed_tokens[i].clone());
+            }
+        }
+    }
+    Ok(program)
+}
+
+pub fn create_references_for_blocks(parsed_tokens: &mut Vec<Function>) {
+    let mut block_tokens: Vec<(usize, u8)> = vec![];
+
+    const IF: u8      = 0;
+    const ELSE: u8    = 1;
+    const WHILE: u8   = 2;
+    const FUNCDEF: u8 = 3;
 
     for i in 0..parsed_tokens.len() {
         match parsed_tokens[i] {
@@ -173,7 +242,6 @@ pub fn create_references_for_blocks(parsed_tokens: Vec<Function>) -> Result<Vec<
             _ => {}
         }
     }
-    Ok(parsed_tokens)
 }
 
 #[derive(Debug)]

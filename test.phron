@@ -1,1 +1,16 @@
-25 not
+fn main
+    45 40 +
+    chout 
+    1 if
+      print_pound
+    end
+
+    89 chout
+    print_pound
+
+end
+
+fn print_pound
+    35 chout
+
+end
