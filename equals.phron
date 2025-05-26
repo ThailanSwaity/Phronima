@@ -1,8 +1,13 @@
-0
-
-if
-    84 chout
-else
-    70 chout
+// NOTE: There is an issue with else, it moves the top of the stack left 
+// one cell when it should not
+5 5 - 
+if 
+  70 chout
+  pop
+  1
+else 
+  84 chout
+  pop 
+  0
 end
-pop
+not
