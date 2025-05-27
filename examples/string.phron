@@ -1,0 +1,11 @@
+fn main
+    "test string" // Writing a string literal pushes the string onto the stack in reverse order
+    print_string
+end
+
+// Prints from the top of the stack until it hits a NULL character
+fn print_string
+    while
+        chout
+    end
+end

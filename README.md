@@ -11,7 +11,7 @@ What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an es
 - [x] [Functions](./examples/functions.phron) (entry point is main)                              
 - [x] Verbose code syntax errors
 - [x] Comments
-- [ ] Strings
+- [x] [Strings literals](./examples/string.phron) (escape characters would be nice)
 - [ ] Optimize compiled brainf*ck
 - [ ] Turing completeness
 - [ ] Interpreter with graphics library (will be separate project)

@@ -25,6 +25,7 @@ pub enum Function {
     Not(),
     FunctionDeclaration(String),
     FunctionCall(String),
+    StringLiteral(String),
 }
 
 #[derive(Debug)]
@@ -123,6 +124,10 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             if let Some(token) = token_iter.next() {
                 parsed_tokens.push(Function::FunctionDeclaration(token.value.to_string()));
             }
+        }
+        else if token.value.contains("\"") {
+            let string_value = &token.value[1..(token.value.len() - 1)];
+            parsed_tokens.push(Function::StringLiteral(string_value.to_string()));
         }
         else {
             parsed_tokens.push(Function::FunctionCall(token.value.to_string()));
@@ -262,6 +267,7 @@ pub fn tokenize_line<'a>(filepath: &'a str, line_number: usize, source: &'a str)
 
     let mut token_start = 0;
     let mut moving_start = true;
+    let mut reading_string = false;
 
     for (col, ch) in source.char_indices() {
         if moving_start {
@@ -273,10 +279,21 @@ pub fn tokenize_line<'a>(filepath: &'a str, line_number: usize, source: &'a str)
             if !ch.is_whitespace() {
                 token_start = col;
                 moving_start = false;
+                if ch == '"' {
+                    reading_string = true;
+                }
             }
         }
         else {
-            if ch.is_whitespace() {
+            if reading_string {
+                if ch == '"' {
+                    let token = Token::new(filepath, line_number, token_start + 1, &source[token_start..(col + 1)]);
+                    tokens.push(token);
+                    moving_start = true;
+                    reading_string = false;
+                }
+            }
+            else if ch.is_whitespace() {
                 let token = Token::new(filepath, line_number, token_start + 1, &source[token_start..col]);
                 tokens.push(token);
                 moving_start = true;

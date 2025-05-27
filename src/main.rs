@@ -321,7 +321,23 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
                 });
                 current_function_name = function_name.clone();
                 continue;
-            }
+            },
+            Function::StringLiteral(string_literal) => {
+                let byte_string = string_literal.as_bytes();
+
+                // Push 0 (NULL character) to the stack
+                compiled_code.push('>');
+                stack.push(0u8);
+
+                // Push each character in the string to the stack in reverse order
+                for i in (0..byte_string.len()).rev() {
+                    stack.push(byte_string[i]);
+                    compiled_code.push('>');
+                    for _i in 0..byte_string[i] {
+                        compiled_code.push('+');
+                    }
+                }
+            },
         }
         i += 1;
         // and this as well
@@ -469,7 +485,14 @@ fn simulate_program(program: HashMap<String, Vec<Function>>) {
                 });
                 current_function_name = function_name.clone();
                 continue;
-            }
+            },
+            Function::StringLiteral(string_literal) => {
+                let byte_string = string_literal.as_bytes();
+                stack.push(0u8);
+                for i in (0..byte_string.len()).rev() {
+                    stack.push(byte_string[i]);
+                }
+            },
         }
         i += 1;
         // and this as well
