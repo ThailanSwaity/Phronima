@@ -8,6 +8,7 @@ What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an es
 - [x] ([if, else, end](./examples/if.phron), [while](./examples/while.phron)) Control flow operators (if, else, while)
 - [ ] Character input, number input, string input
 - [ ] Named pointers (variables)
+- [x] [Functions](./examples/functions.phron) (entry point is main)                              
 - [x] Verbose code syntax errors
 - [x] Comments
 - [ ] Strings
