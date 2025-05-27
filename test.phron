@@ -1,16 +1,15 @@
 fn main
-    45 40 +
-    chout 
-    1 if
+    1 if 
       print_pound
     end
+    45 40 +
+    chout 
 
-    89 chout
     print_pound
+    89 chout
 
 end
 
 fn print_pound
     35 chout
-
 end

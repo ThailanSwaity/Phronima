@@ -19,6 +19,10 @@ fn main() {
             eprintln!("Application error: {err}");
             process::exit(1);
         });
+        if !program.contains_key("main") {
+            eprintln!("Could not find function main");
+            process::exit(1);
+        }
         if &args[1] == "sim" {
             simulate_program(program);
         }
@@ -54,7 +58,7 @@ fn read_program_from_file(filepath: &str) -> Result<HashMap<String, Vec<Function
     let tokens = phronima::tokenize_source_code(filepath, &source);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let mut program = phronima::parse_program_structure(parsed_tokens)?;
-    for (fname, fblock) in &mut program {
+    for (_fname, fblock) in &mut program {
         phronima::create_references_for_blocks(fblock);
     }
     println!("{:?}", program);
@@ -71,7 +75,7 @@ fn compile_program_from_source(filepath: &str, source_code: String) -> Result<St
     let tokens = phronima::tokenize_source_code(filepath, &source_code);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let mut program = phronima::parse_program_structure(parsed_tokens)?;
-    for (fname, fblock) in &mut program {
+    for (_fname, fblock) in &mut program {
         phronima::create_references_for_blocks(fblock);
     }
     let bf_code = compile_program(program)?;
@@ -314,15 +318,17 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
 
 fn simulate_program(program: HashMap<String, Vec<Function>>) {
     let mut stack: Stack = Stack::new();
-    let program = program.get("main").unwrap();
+    let mut call_stack: Vec<(String, usize)> = vec![];
+    let mut current_function = program.get("main").unwrap();
+    let mut current_function_name: String = "main".to_string();
 
     let mut memory: [u8; 256] = [0u8; 256];
 
     let mut i = 0;
-    while i  < program.len() {
-        match program[i] {
+    while i < current_function.len() {
+        match &current_function[i] {
             Function::Push(byte) => {
-                stack.push(byte);
+                stack.push(*byte);
             },
             Function::Pop() => {
                 stack.pop();
@@ -434,11 +440,21 @@ fn simulate_program(program: HashMap<String, Vec<Function>>) {
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
             },
-            Function::FunctionCall(_) => {
-                println!("Function call");
+            Function::FunctionCall(function_name) => {
+                call_stack.push((current_function_name.clone(), i));
+                i = 0;
+                current_function = program.get(&function_name.clone()).unwrap();
+                current_function_name = function_name.clone();
+                continue;
             }
         }
         i += 1;
+        if i == current_function.len() && (&current_function_name != "main") {
+            let (fname, index) = call_stack.pop().unwrap();
+            i = index + 1;
+            current_function_name = fname.clone();
+            current_function = program.get(&fname).unwrap();
+        }
     }
 }
 
