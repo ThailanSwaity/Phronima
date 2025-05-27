@@ -1,8 +1,10 @@
-0
+fn main
+    0
 
-if
-    84 chout
-else
-    70 chout
+    if
+        84 chout
+    else
+        70 chout
+    end
+    pop
 end
-pop

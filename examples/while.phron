@@ -1,9 +1,11 @@
-74 while 
-    dup
-    1 if
-        swap
-        chout
+fn main
+    74 while 
+        dup
+        1 if
+            swap
+            chout
+        end
+        pop 
+        1 -
     end
-    pop 
-    1 -
 end

@@ -1,0 +1,15 @@
+fn main
+    10 33 105 72
+    4
+    print_string
+end
+
+// Prints starting from the top of the stack
+// This will take one argument: the number of characters to print
+fn print_string
+    while
+        swap
+        chout
+        1 -
+    end
+end

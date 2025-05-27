@@ -61,7 +61,6 @@ fn read_program_from_file(filepath: &str) -> Result<HashMap<String, Vec<Function
     for (_fname, fblock) in &mut program {
         phronima::create_references_for_blocks(fblock);
     }
-    println!("{:?}", program);
     Ok(program)
 }
 
@@ -90,7 +89,10 @@ fn write_program_to_file(filepath: &str, compiled_code: String) -> Result<(), Bo
 
 fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Box<dyn Error>> {
     let mut compiled_code: String = String::from("");
-    let program = program.get("main").unwrap();
+
+    let mut call_stack: Vec<(String, usize)> = vec![];
+    let mut current_function = program.get("main").unwrap();
+    let mut current_function_name: String = "main".to_string();
 
     // I'm using stack and memory here to assist with memory usage in brainf*ck
     // I have not bothered to try and write an implementation that would allow run-time memory usage
@@ -102,15 +104,16 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
         compiled_code.push('>');
     }
 
-    for i in 0..program.len() {
-        match program[i] {
+    let mut i = 0;
+    while i < current_function.len() {
+        match &current_function[i] {
             Function::Push(byte) => {
                 compiled_code.push('>');
-                for _i in 0..byte {
+                for _i in 0..*byte {
                     compiled_code.push('+');
                 }
 
-                stack.push(byte);
+                stack.push(*byte);
             },
             Function::Pop() => {
                 compiled_code.push_str("[-]<");
@@ -240,15 +243,15 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
                 compiled_code.push('[');
             },
             Function::End(index) => {
-                if index.unwrap() == program.len() {
+                if index.unwrap() == current_function.len() {
                     compiled_code.push_str(">]<");
                 }
-                else if index.unwrap() > program.len() {
+                else if index.unwrap() > current_function.len() {
                     eprintln!("Something really not great happened here...");
                     process::exit(1);
                 }
                 else {
-                    match program[index.unwrap()] {
+                    match current_function[index.unwrap()] {
                         Function::While(_index) => {
                             compiled_code.push(']');
                         },
@@ -308,9 +311,25 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
             },
-            Function::FunctionCall(_) => {
-                println!("Function called");
+            // There's definitely a better way to do this
+            Function::FunctionCall(function_name) => {
+                call_stack.push((current_function_name.clone(), i));
+                i = 0;
+                current_function = program.get(&function_name.clone()).unwrap_or_else(|| {
+                    eprintln!("Unknown function: {}", function_name);
+                    process::exit(1);
+                });
+                current_function_name = function_name.clone();
+                continue;
             }
+        }
+        i += 1;
+        // and this as well
+        if i == current_function.len() && (&current_function_name != "main") {
+            let (fname, index) = call_stack.pop().unwrap();
+            i = index + 1;
+            current_function_name = fname.clone();
+            current_function = program.get(&fname).unwrap();
         }
     }
     Ok(compiled_code)
@@ -440,15 +459,20 @@ fn simulate_program(program: HashMap<String, Vec<Function>>) {
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
             },
+            // There's definitely a better way to do this
             Function::FunctionCall(function_name) => {
                 call_stack.push((current_function_name.clone(), i));
                 i = 0;
-                current_function = program.get(&function_name.clone()).unwrap();
+                current_function = program.get(&function_name.clone()).unwrap_or_else(|| {
+                    eprintln!("Unknown function: {}", function_name);
+                    process::exit(1);
+                });
                 current_function_name = function_name.clone();
                 continue;
             }
         }
         i += 1;
+        // and this as well
         if i == current_function.len() && (&current_function_name != "main") {
             let (fname, index) = call_stack.pop().unwrap();
             i = index + 1;

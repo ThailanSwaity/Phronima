@@ -1,9 +1,11 @@
-9 while 
-    dup while 
-      35 chout
-      1 -
+fn main
+    9 while 
+        dup while 
+          35 chout
+          1 -
+        end
+        pop
+        10 chout
+        1 -
     end
-    pop
-    10 chout
-    1 -
 end

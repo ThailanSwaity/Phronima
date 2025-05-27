@@ -173,7 +173,7 @@ pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<HashMap<S
                 block_tokens.push((i, FUNCDEF));
             },
             Function::End(_reference) => {
-                let (index, block_word_type) = block_tokens[block_tokens.len() - 1];
+                let (_index, block_word_type) = block_tokens[block_tokens.len() - 1];
                 if block_word_type == FUNCDEF {
                     program.insert(function_name, function_tokens);
                     function_tokens = Vec::new();
@@ -203,7 +203,6 @@ pub fn create_references_for_blocks(parsed_tokens: &mut Vec<Function>) {
     const IF: u8      = 0;
     const ELSE: u8    = 1;
     const WHILE: u8   = 2;
-    const FUNCDEF: u8 = 3;
 
     for i in 0..parsed_tokens.len() {
         match parsed_tokens[i] {
