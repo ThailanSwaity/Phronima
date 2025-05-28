@@ -8,4 +8,12 @@ fn print_string
     while
         chout
     end
+    pop
+end
+
+// This is not possible right now? But I think I have an idea for how to make it work
+fn write_string 
+    mem 1 + // Location of the start of the string
+    mem 0 write // Write a variable to memory
+
 end
