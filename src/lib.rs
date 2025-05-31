@@ -169,6 +169,7 @@ impl Program {
         }
 
         // Add all functions of program to self (non overriding)
+        // TODO: Make this non overriding
         for (k, v) in program.functions {
             self.functions.insert(k, v);
         }    
@@ -332,7 +333,7 @@ pub fn tokenize_line<'a>(filepath: &'a str, line_number: usize, source: &'a str)
                 moving_start = true;
             }
         }
-        if col == source.len() - 1 && !ch.is_whitespace() {
+        if col == source.len() - 1 && !ch.is_whitespace() && ch != '"' {
             let token = Token::new(filepath, line_number, token_start + 1, &source[token_start..(col + 1)]);
             tokens.push(token);
         }

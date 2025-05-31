@@ -1,14 +1,8 @@
-fn main
-    "test string" // Writing a string literal pushes the string onto the stack in reverse order
-    print_string
-end
+import ./std.phron
 
-// Prints from the top of the stack until it hits a NULL character
-fn print_string
-    while
-        chout
-    end
-    pop
+fn main
+    "Hello, world!" // Writing a string literal pushes the string onto the stack in reverse order
+    println_string
 end
 
 // This is not possible right now? But I think I have an idea for how to make it work

@@ -13,3 +13,18 @@ fn println_string
     pop
     10 chout
 end
+
+// Computes the factorial of the value at the top of the stack
+// Uses memory address 13 as a temp value
+fn !
+    mem 13 + 1 write
+    while
+        dup mem 13 + read *
+        mem 13 + swap write
+
+        1 -
+    end
+    pop
+
+    mem 13 + read
+end
