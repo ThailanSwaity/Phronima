@@ -1,5 +1,5 @@
 use std::error::Error;
-use std::collections::HashMap;
+use std::collections::{ HashMap, VecDeque };
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Function {
@@ -26,6 +26,7 @@ pub enum Function {
     FunctionDeclaration(String),
     FunctionCall(String),
     StringLiteral(String),
+    Import(String),
 }
 
 #[derive(Debug)]
@@ -125,6 +126,11 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
                 parsed_tokens.push(Function::FunctionDeclaration(token.value.to_string()));
             }
         }
+        else if token.value == "import" {
+            if let Some(token) = token_iter.next() {
+                parsed_tokens.push(Function::Import(token.value.to_string()));
+            }
+        }
         else if token.value.contains("\"") {
             let string_value = &token.value[1..(token.value.len() - 1)];
             parsed_tokens.push(Function::StringLiteral(string_value.to_string()));
@@ -146,8 +152,32 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
     Ok(parsed_tokens)
 }
 
-pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<HashMap<String, Vec<Function>>, Box<dyn Error>> {
-    let mut program: HashMap<String, Vec<Function>> = HashMap::new();
+pub struct Program {
+    pub imports: VecDeque<String>,
+    pub functions: HashMap<String, Vec<Function>>,
+}
+
+impl Program {
+    pub fn new(imports: VecDeque<String>, functions: HashMap<String, Vec<Function>>) -> Program {
+        Program { imports, functions }
+    }
+
+    pub fn consume(&mut self, mut program: Program) {
+        // add all imports to self 
+        while let Some(q_item) = &program.imports.pop_front() {
+            self.imports.push_back(q_item.to_string());
+        }
+
+        // Add all functions of program to self (non overriding)
+        for (k, v) in program.functions {
+            self.functions.insert(k, v);
+        }    
+    }
+}
+
+pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<Program, Box<dyn Error>> {
+    let mut functions: HashMap<String, Vec<Function>> = HashMap::new();
+    let mut q: VecDeque<String> = VecDeque::new();
 
     let mut block_tokens: Vec<(usize, u8)> = Vec::new();
     let mut function_tokens: Vec<Function> = Vec::new();
@@ -180,7 +210,7 @@ pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<HashMap<S
             Function::End(_reference) => {
                 let (_index, block_word_type) = block_tokens[block_tokens.len() - 1];
                 if block_word_type == FUNCDEF {
-                    program.insert(function_name, function_tokens);
+                    functions.insert(function_name, function_tokens);
                     function_tokens = Vec::new();
                     function_name = String::new();
                 }
@@ -194,12 +224,15 @@ pub fn parse_program_structure(parsed_tokens: Vec<Function>) -> Result<HashMap<S
                     function_tokens.push(parsed_tokens[i].clone());
                 }
             },
+            Function::Import(filename) => {
+                q.push_back(filename.clone());
+            }
             _ => {
                 function_tokens.push(parsed_tokens[i].clone());
             }
         }
     }
-    Ok(program)
+    Ok(Program::new(q, functions))
 }
 
 pub fn create_references_for_blocks(parsed_tokens: &mut Vec<Function>) {

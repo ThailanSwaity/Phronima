@@ -1,0 +1,15 @@
+// Prints from the top of the stack until it hits a NULL character
+fn print_string
+    while
+        chout
+    end
+    pop
+end
+
+fn println_string
+    while
+        chout
+    end
+    pop
+    10 chout
+end

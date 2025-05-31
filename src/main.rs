@@ -5,8 +5,7 @@ use std::io;
 use std::env;
 use std::process;
 use std::error::Error;
-use std::collections::HashMap;
-use phronima::{ Stack, Function };
+use phronima::{ Stack, Function, Program };
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -15,11 +14,11 @@ fn main() {
     if &args[1] == "sim" || &args[1] == "com" {
         check_args(args.len());
         let filepath = &args[2];
-        let program: HashMap<String, Vec<Function>> = read_program_from_file(filepath).unwrap_or_else(|err| {
+        let program: Program = read_program_from_file(filepath).unwrap_or_else(|err| {
             eprintln!("Application error: {err}");
             process::exit(1);
         });
-        if !program.contains_key("main") {
+        if !program.functions.contains_key("main") {
             eprintln!("Could not find function main");
             process::exit(1);
         }
@@ -53,15 +52,27 @@ fn check_args(num_args: usize) {
     }
 }
 
-fn read_program_from_file(filepath: &str) -> Result<HashMap<String, Vec<Function>>, Box<dyn Error>> {
+fn read_program_from_file(filepath: &str) -> Result<Program, Box<dyn Error>> {
     let source = fs::read_to_string(filepath)?;
     let tokens = phronima::tokenize_source_code(filepath, &source);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let mut program = phronima::parse_program_structure(parsed_tokens)?;
-    for (_fname, fblock) in &mut program {
+    let _ = handle_imports(&mut program);
+    for (_fname, fblock) in &mut program.functions {
         phronima::create_references_for_blocks(fblock);
     }
     Ok(program)
+}
+
+fn handle_imports(program: &mut Program) -> Result<(), Box<dyn Error>> {
+    while let Some(filepath) = program.imports.pop_front() {
+        let source = fs::read_to_string(&filepath)?;
+        let tokens = phronima::tokenize_source_code(&filepath, &source);
+        let parsed_tokens = phronima::parse_tokens(tokens)?;
+        let import_program = phronima::parse_program_structure(parsed_tokens)?;
+        program.consume(import_program);
+    }
+    Ok(())
 }
 
 fn compile_program_from_file(filepath: &str) -> Result<String, Box<dyn Error>> {
@@ -74,7 +85,7 @@ fn compile_program_from_source(filepath: &str, source_code: String) -> Result<St
     let tokens = phronima::tokenize_source_code(filepath, &source_code);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let mut program = phronima::parse_program_structure(parsed_tokens)?;
-    for (_fname, fblock) in &mut program {
+    for (_fname, fblock) in &mut program.functions {
         phronima::create_references_for_blocks(fblock);
     }
     let bf_code = compile_program(program)?;
@@ -87,8 +98,9 @@ fn write_program_to_file(filepath: &str, compiled_code: String) -> Result<(), Bo
     Ok(())
 }
 
-fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Box<dyn Error>> {
+fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
     let mut compiled_code: String = String::from("");
+    let program = program.functions;
 
     let mut call_stack: Vec<(String, usize)> = vec![];
     let mut current_function = program.get("main").unwrap();
@@ -338,6 +350,9 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
                     }
                 }
             },
+            Function::Import(_) => {
+                eprintln!("Unreachable");
+            },
         }
         i += 1;
         // and this as well
@@ -351,7 +366,9 @@ fn compile_program(program: HashMap<String, Vec<Function>>) -> Result<String, Bo
     Ok(compiled_code)
 }
 
-fn simulate_program(program: HashMap<String, Vec<Function>>) {
+fn simulate_program(program: Program) {
+    let program = program.functions;
+
     let mut stack: Stack = Stack::new();
     let mut call_stack: Vec<(String, usize)> = vec![];
     let mut current_function = program.get("main").unwrap();
@@ -492,6 +509,9 @@ fn simulate_program(program: HashMap<String, Vec<Function>>) {
                 for i in (0..byte_string.len()).rev() {
                     stack.push(byte_string[i]);
                 }
+            },
+            Function::Import(_) => {
+                eprintln!("Unreachable");
             },
         }
         i += 1;
