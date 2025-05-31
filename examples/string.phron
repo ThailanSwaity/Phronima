@@ -1,4 +1,4 @@
-import ./std.phron
+import ./stdlib.phron
 
 fn main
     "Hello, world!" // Writing a string literal pushes the string onto the stack in reverse order

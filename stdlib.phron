@@ -1,3 +1,7 @@
+// This is the standard library for the Phronima language.
+// It can be imported to using "import ./std.phron"
+//
+//
 // Prints from the top of the stack until it hits a NULL character
 fn print_string
     while
@@ -27,4 +31,11 @@ fn !
     pop
 
     mem 13 + read
+end
+
+// Quick and naive implementation for printing a single digit
+// Pops the top of the stack and prints the value as an integer,
+// if this value is greater than 9 it will just print whatever corresponding ascii value
+fn print_digit 
+    48 + chout
 end

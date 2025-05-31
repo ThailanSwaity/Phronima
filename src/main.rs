@@ -1,15 +1,14 @@
+use phronima::{Function, Program, Stack};
+use std::env;
+use std::error::Error;
 use std::fs;
 use std::fs::File;
-use std::io::Write;
 use std::io;
-use std::env;
+use std::io::Write;
 use std::process;
-use std::error::Error;
-use phronima::{ Stack, Function, Program };
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
 
     if &args[1] == "sim" || &args[1] == "com" {
         check_args(args.len());
@@ -24,8 +23,7 @@ fn main() {
         }
         if &args[1] == "sim" {
             simulate_program(program);
-        }
-        else if &args[1] == "com" {
+        } else if &args[1] == "com" {
             check_args(args.len());
             let compiled_code = compile_program(program).unwrap_or_else(|err| {
                 eprintln!("Application error: {err}");
@@ -33,13 +31,11 @@ fn main() {
             });
             let _ = write_program_to_file("compiled_code.txt", compiled_code);
         }
-    }
-    else if &args[1] == "rec"{
+    } else if &args[1] == "rec" {
         println!("Creating compilatin test validation files...\n");
         let _ = record_for_test();
         println!("\ncomplete.");
-    }
-    else {
+    } else {
         eprintln!("Must state whether to compile 'com' or simulate 'sim' the program");
         process::exit(1);
     }
@@ -81,7 +77,10 @@ fn compile_program_from_file(filepath: &str) -> Result<String, Box<dyn Error>> {
     Ok(bf_code)
 }
 
-fn compile_program_from_source(filepath: &str, source_code: String) -> Result<String, Box<dyn Error>> {
+fn compile_program_from_source(
+    filepath: &str,
+    source_code: String,
+) -> Result<String, Box<dyn Error>> {
     let tokens = phronima::tokenize_source_code(filepath, &source_code);
     let parsed_tokens = phronima::parse_tokens(tokens)?;
     let mut program = phronima::parse_program_structure(parsed_tokens)?;
@@ -126,45 +125,45 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 }
 
                 stack.push(*byte);
-            },
+            }
             Function::Pop() => {
                 compiled_code.push_str("[-]<");
 
                 stack.pop();
-            },
+            }
             Function::Plus() => {
                 compiled_code.push_str("[<+>-]<");
 
                 let a = stack.pop();
                 let b = stack.pop();
                 stack.push(a + b);
-            },
+            }
             Function::Minus() => {
                 compiled_code.push_str("[-<->]<");
 
                 let b = stack.pop();
                 let a = stack.pop();
                 stack.push(a - b);
-            },
+            }
             Function::Mult() => {
                 compiled_code.push_str("<[->>+<<]>[->[->+<<<+>>]>[-<+>]<<]>[-]<<");
 
                 let b = stack.pop();
                 let a = stack.pop();
                 stack.push(a * b);
-            },
+            }
             Function::CharOut() => {
                 compiled_code.push_str(".[-]<");
 
                 stack.pop();
-            },
+            }
             Function::NumOut() => {
                 todo!("numout compiler code");
-            },
+            }
             Function::Write() => {
                 // As a better alternative, we want the address pointer to be constant during loops instead
                 // of the address value
-                
+
                 // So while popping the byte value, we want to copy it to the address in memory
                 // instead of hardcoding the value
                 let byte = stack.pop();
@@ -198,7 +197,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 compiled_code.push_str("[-]<");
 
                 memory[addr as usize] = byte;
-            },
+            }
             Function::Read() => {
                 // The read must copy the value into two places first
 
@@ -226,7 +225,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                     compiled_code.push('>');
                 }
                 compiled_code.push(']');
-                
+
                 // Finished copying value onto stack. We now have to copy the value back into the
                 // original address
                 for _i in 0..(addr as usize) {
@@ -246,34 +245,32 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 for _i in 0..(255 + stack.top) {
                     compiled_code.push('>');
                 }
-            },
+            }
             Function::Mem() => {
                 compiled_code.push_str(">+");
                 stack.push(1u8);
-            },
+            }
             Function::If(_index) => {
                 compiled_code.push('[');
-            },
+            }
             Function::End(index) => {
                 if index.unwrap() == current_function.len() {
                     compiled_code.push_str(">]<");
-                }
-                else if index.unwrap() > current_function.len() {
+                } else if index.unwrap() > current_function.len() {
                     eprintln!("Something really not great happened here...");
                     process::exit(1);
-                }
-                else {
+                } else {
                     match current_function[index.unwrap()] {
                         Function::While(_index) => {
                             compiled_code.push(']');
-                        },
+                        }
                         _ => {
                             compiled_code.push_str(">]<"); // This moves the cell pointer to a block
-                            // with a value of 0 to ensure the if block never executes more than once
-                        },
+                                                           // with a value of 0 to ensure the if block never executes more than once
+                        }
                     }
                 }
-            },
+            }
             // TODO: fix the behaviour of if and else incorrectly moving the stack
             Function::Else(_index) => {
                 compiled_code.push_str(">]<");
@@ -285,19 +282,19 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 stack.push(not_byte);
 
                 compiled_code.push('[');
-            },
+            }
             Function::While(_index) => {
                 compiled_code.push_str("[");
             }
             Function::LessThan() => {
                 todo!("lessthan compiler code");
-            },
+            }
             Function::GreaterThan() => {
                 todo!("greaterthan compiler code");
-            },
+            }
             Function::Equals() => {
                 todo!("equals compiler code");
-            },
+            }
             Function::Swap() => {
                 compiled_code.push_str("<[->>+<<]>[-<+>]>[-<+>]<");
 
@@ -305,24 +302,27 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 let b = stack.pop();
                 stack.push(a);
                 stack.push(b);
-            },
+            }
             Function::Dup() => {
                 compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
 
                 let a = stack.pop();
                 stack.push(a);
                 stack.push(a);
-            },
+            }
+            Function::GetStackHeight() => {
+                todo!("get stack height compiler code");
+            }
             Function::Not() => {
                 compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
                 let byte = stack.pop();
 
                 let not_byte = 1u8.wrapping_sub(byte);
                 stack.push(not_byte);
-            },
+            }
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
-            },
+            }
             // There's definitely a better way to do this
             Function::FunctionCall(function_name) => {
                 call_stack.push((current_function_name.clone(), i));
@@ -333,7 +333,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 });
                 current_function_name = function_name.clone();
                 continue;
-            },
+            }
             Function::StringLiteral(string_literal) => {
                 let byte_string = string_literal.as_bytes();
 
@@ -349,10 +349,10 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                         compiled_code.push('+');
                     }
                 }
-            },
+            }
             Function::Import(_) => {
                 eprintln!("Unreachable");
-            },
+            }
         }
         i += 1;
         // and this as well
@@ -381,43 +381,43 @@ fn simulate_program(program: Program) {
         match &current_function[i] {
             Function::Push(byte) => {
                 stack.push(*byte);
-            },
+            }
             Function::Pop() => {
                 stack.pop();
-            },
+            }
             Function::Plus() => {
                 let a = stack.pop();
                 let b = stack.pop();
                 stack.push(a + b);
-            },
+            }
             Function::Minus() => {
                 let b = stack.pop();
                 let a = stack.pop();
                 stack.push(a - b);
-            },
+            }
             Function::Mult() => {
                 let b = stack.pop();
                 let a = stack.pop();
                 stack.push(a * b);
-            },
+            }
             Function::CharOut() => {
                 print!("{}", stack.pop() as char);
-            },
+            }
             Function::NumOut() => {
                 print!("{}", stack.pop());
-            },
+            }
             Function::Write() => {
                 let a = stack.pop();
                 let b = stack.pop();
                 memory[b as usize] = a;
-            },
+            }
             Function::Read() => {
                 let a = stack.pop();
                 stack.push(memory[a as usize]);
-            },
+            }
             Function::Mem() => {
                 stack.push(1u8);
-            },
+            }
             Function::If(index) => {
                 let a = stack.pop();
                 stack.push(a);
@@ -425,15 +425,15 @@ fn simulate_program(program: Program) {
                     i = index.unwrap();
                     continue;
                 }
-            },
+            }
             Function::End(index) => {
                 i = index.unwrap();
                 continue;
-            },
+            }
             Function::Else(index) => {
                 i = index.unwrap();
                 continue;
-            },
+            }
             Function::While(index) => {
                 let a = stack.pop();
                 stack.push(a);
@@ -447,51 +447,51 @@ fn simulate_program(program: Program) {
                 let a = stack.pop();
                 if a < b {
                     stack.push(1);
-                }
-                else {
+                } else {
                     stack.push(0);
                 }
-            },
+            }
             Function::GreaterThan() => {
                 let b = stack.pop();
                 let a = stack.pop();
                 if a > b {
                     stack.push(1);
-                }
-                else {
+                } else {
                     stack.push(0);
                 }
-            },
+            }
             Function::Equals() => {
                 let b = stack.pop();
                 let a = stack.pop();
                 if a == b {
                     stack.push(1);
-                }
-                else {
+                } else {
                     stack.push(0);
                 }
-            },
+            }
             Function::Swap() => {
                 let a = stack.pop();
                 let b = stack.pop();
                 stack.push(a);
                 stack.push(b);
-            },
+            }
             Function::Dup() => {
                 let a = stack.pop();
                 stack.push(a);
                 stack.push(a);
-            },
+            }
+            Function::GetStackHeight() => {
+                stack.push(stack.top as u8);
+            }
             Function::Not() => {
                 let byte = stack.pop();
 
                 let not_byte = 1u8.wrapping_sub(byte);
                 stack.push(not_byte);
-            },
+            }
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
-            },
+            }
             // There's definitely a better way to do this
             Function::FunctionCall(function_name) => {
                 call_stack.push((current_function_name.clone(), i));
@@ -502,17 +502,17 @@ fn simulate_program(program: Program) {
                 });
                 current_function_name = function_name.clone();
                 continue;
-            },
+            }
             Function::StringLiteral(string_literal) => {
                 let byte_string = string_literal.as_bytes();
                 stack.push(0u8);
                 for i in (0..byte_string.len()).rev() {
                     stack.push(byte_string[i]);
                 }
-            },
+            }
             Function::Import(_) => {
                 eprintln!("Unreachable");
-            },
+            }
         }
         i += 1;
         // and this as well
@@ -556,7 +556,10 @@ mod test {
         }
     }
 
-    fn make_code_for_comparison(validation_code_filepath: &str, file_to_compile: &str) -> (String, String) {
+    fn make_code_for_comparison(
+        validation_code_filepath: &str,
+        file_to_compile: &str,
+    ) -> (String, String) {
         let mut validation_bf_code = fs::read_to_string(validation_code_filepath).unwrap();
         trim_newline(&mut validation_bf_code);
         let compiled_bf_code = compile_program_from_file(file_to_compile).unwrap();
@@ -575,7 +578,10 @@ mod test {
         test_code_path.push(operation_name);
         test_code_path.set_extension("phron");
 
-        let (valid_code, compiled_code) = make_code_for_comparison(valid_code_path.to_str().unwrap(), test_code_path.to_str().unwrap());
+        let (valid_code, compiled_code) = make_code_for_comparison(
+            valid_code_path.to_str().unwrap(),
+            test_code_path.to_str().unwrap(),
+        );
         valid_code == compiled_code
     }
 

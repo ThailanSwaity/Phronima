@@ -1,0 +1,6 @@
+import ./stdlib.phron 
+
+fn main
+    "Cale is talking about fondling balls to Around The World right now lmao"
+    println_string
+end

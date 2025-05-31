@@ -1,0 +1,44 @@
+import ./stdlib.phron
+
+fn main
+    20 10 print_box
+end
+
+// Prints a box with a width and height from the stack
+// [ width, height ]
+fn print_box
+    // A 2dup would be nice here so we can preserve the stack
+
+    // Reduce height and width to account for borders
+    2 - swap 
+    2 - swap
+
+    swap dup 2 + while 
+        "#" print_string
+        1 -
+    end
+    pop
+    10 chout
+    swap
+
+    while
+        "#" print_string
+        swap dup while
+            " " print_string
+            1 -
+        end
+        pop
+        swap
+        "#" println_string
+    1 -
+    end
+
+    swap dup 2 + while 
+        "#" print_string
+        1 -
+    end
+    pop
+    10 chout
+    pop
+    pop
+end
