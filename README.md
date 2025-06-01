@@ -47,7 +47,7 @@ The address assigned to a read or write operation cannot change at run-time (thi
 | * (multiplication) |:heavy_check_mark:|:heavy_check_mark:|
 | modulo| | |
 | chout |:heavy_check_mark: |:heavy_check_mark: |
-| numout| |:heavy_check_mark: |
+| numout|:heavy_check_mark:  |:heavy_check_mark: |
 | write |:heavy_check_mark: |:heavy_check_mark: |
 | read  |:heavy_check_mark: |:heavy_check_mark: |
 | mem   |:heavy_check_mark: |:heavy_check_mark: |

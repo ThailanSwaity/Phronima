@@ -1,6 +1,14 @@
 import ./stdlib.phron 
 
 fn main
-    "Cale is talking about fondling balls to Around The World right now lmao"
-    println_string
+    0 255
+    while
+        swap 1 +
+        "Number: " print_string
+        dup numout
+        10 chout
+      
+        swap 1 -
+    end
+    pop pop
 end

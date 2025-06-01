@@ -157,8 +157,13 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
 
                 stack.pop();
             }
+            // Numout source:
+            // https://esolangs.org/wiki/Brainfuck_algorithms#Print_value_of_cell_x_as_number_(8-bit)
             Function::NumOut() => {
-                todo!("numout compiler code");
+                compiled_code.push_str(">>++++++++++<<[->+>-[>+>>]>[+[-<+>]>+>>]<<<<<<]>>[-]>>>++++++++++<[->-[>+>>]>[+[- <+>]>+>>]<<<<<]>[-]>>[>++++++[-<++++++++>]<.<<+>+>[-]]<[<[->-<]++++++[->++++++++ <]>.[-]]<<++++++[-<++++++++>]<.[-]<<[-<+>]<");
+                compiled_code.push_str("[-]<");
+
+                stack.pop();
             }
             Function::Write() => {
                 // As a better alternative, we want the address pointer to be constant during loops instead
@@ -266,7 +271,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                         }
                         _ => {
                             compiled_code.push_str(">]<"); // This moves the cell pointer to a block
-                                                           // with a value of 0 to ensure the if block never executes more than once
+                            // with a value of 0 to ensure the if block never executes more than once
                         }
                     }
                 }
