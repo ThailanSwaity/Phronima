@@ -11,7 +11,7 @@ What is brainf*ck? [Brainf*ck](https://en.wikipedia.org/wiki/Brainfuck) is an es
 - [x] [Functions](./examples/functions.phron) (entry point is main)                              
 - [x] Verbose code syntax errors
 - [x] Comments
-- [x] [Strings literals](./examples/string.phron) (escape characters would be nice)
+- [x] [String literals](./examples/string.phron) (escape characters would be nice)
 - [ ] Optimize compiled brainf*ck
 - [ ] Turing completeness
 - [ ] Interpreter with graphics library (will be separate project)
@@ -23,8 +23,8 @@ There are two modes/subcommands
 
 NOTE: some operations do not currently work in 'compile' mode. Still a work in progress.
 
-      cargo run -- sim ./helloworld.phron
-      cargo run -- com ./helloworld.phron
+      cargo run -- sim ./examples/helloworld.phron
+      cargo run -- com ./examples/helloworld.phron
 
 Currently, the compiled code will be written to a file called "program_comp.txt"
 

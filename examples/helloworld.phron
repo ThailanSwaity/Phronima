@@ -1,6 +1,13 @@
+import ./stdlib.phron
+
 fn main
     33    100   108   114   111   119   32    44    111   108   108   101   72
     chout chout chout chout chout chout chout chout chout chout chout chout chout
+
+    10 chout // Print a new line character
+
+    // Hello world with new language features
+    "Hello, world!" println_string
 end
 
 // Here I pushed the characters for "Hello, world!" in reverse order to the stack.
