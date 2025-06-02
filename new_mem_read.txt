@@ -1,0 +1,148 @@
+++
+>+++
+>++++ address to read from
+
+
+RAMINIT will initialize the start of ram value of 82
+
+Move to RAM section start
+>>>>>>>>>>>>>>>>>>>>>>>>>>
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
+++
+
+Move left until a non-zero value is found
+<
++[<[>-]>[-<+>]<]<
+======================================================================================================= FUNCTION START
+
+Push a value of 1 to the "stack," this will tell us where to store the data read from memory 
+>+
+
+Copy a value from address 2 in memory
+
+    Copy the address from the stack into the bus cells of the first address
+    
+        Move to stack cell containing the address
+        <
+
+        
+        [
+            Decrement address and move to the right of the top of the stack
+            ->>
+
+            Move to RAM section start
+            +[>[<-]<[->+<]>]>
+
+            Increment left bus and right bus
+            >>+>+
+
+            Move 1 cell left of RAM section start
+            <<<<
+
+            Move to 1 placed on stack earler
+            +[<[>-]>[-<+>]<]<
+
+            Move to address on stack
+            <
+        ]
+
+Move to the RAM section start
+>>
++[>[<-]<[->+<]>]>
+
+Move to address right bus
+>>>
+
+Move right to the address
+[
+    Move to left bus cell
+    <
+
+    Copy left bus value while moving
+    [->>>>+<<<<]
+
+    Move to right bus cell
+    >
+
+    Move right one address
+    [>>>>+<<<<-]>>>>-
+]
+
+Copy data cell into right bus cell and copy cell
+>
+
+Insert test data into data cell ======================================== DO NOT INCLUDE IN FINAL CODE
++++++++++
+
+[
+    Decrement data cell
+    -
+
+    Move to right bus cell and increment
+    <+
+
+    Move to copy cell and increment
+    <<+
+
+    Move back to data cell
+    >>>
+]
+
+Move value from right bus cell back into data cell
+<
+[->+<]
+
+Move to the left bus
+<
+
+Copy data from copy cell left from the address until address 0 is reached
+[
+    Move to copy cell
+    <
+
+    Copy copy cell to copy cell left one address
+    [-<<<<+>>>>]
+
+    Move to left bus
+    >
+
+    Move left one address
+    [<<<<+>>>>-]<<<<-
+]
+
+Move to copy cell
+<
+[
+    Decrement copy cell and move left of RAM section start
+    -<<
+
+    Move to 1 placed on stack earlier
+    +[<[>-]>[-<+>]<]<
+    <
+
+    Increment cell
+    +
+
+    Move back to copy cell in RAM
+    >>
+    +[>[<-]<[->+<]>]>
+    >
+]
+
+Move back to cell start
+<<
++[<[>-]>[-<+>]<]<
+
+    Delete one placed earlier
+    -
+
+    Move to top of stack
+    <

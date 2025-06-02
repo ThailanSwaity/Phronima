@@ -143,7 +143,9 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
 
                 let b = stack.pop();
                 let a = stack.pop();
-                stack.push(a - b);
+                // We shouldn't actually keep track of the stack anymore. Things break in
+                // complicated functions
+                stack.push(a.wrapping_sub(b));
             }
             Function::Mult() => {
                 compiled_code.push_str("<[->>+<<]>[->[->+<<<+>>]>[-<+>]<<]>[-]<<");
@@ -289,7 +291,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 compiled_code.push('[');
             }
             Function::While(_index) => {
-                compiled_code.push_str("[");
+                compiled_code.push('[');
             }
             Function::LessThan() => {
                 todo!("lessthan compiler code");
