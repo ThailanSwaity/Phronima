@@ -1,0 +1,133 @@
+++
+>+++  address to write to
+>++++ data to write
+
+RAMINIT will initialize the start of ram value of 82
+
+Move to RAM section start
+>>>>>>>>>>>>>>>>>>>>>>>>>>
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
++++++++++
+++
+
+Move left until a non-zero value is found
+<
++[<[>-]>[-<+>]<]<
+
+=================================================================================== FUNCTION START
+
+Push a value of 1 to the "stack," this will tell us where to store the data read from memory
+>+
+
+Move the target address into the first bus cells
+
+    Move to the address on the stack
+    <<
+
+    [
+        Decrement the address value
+        -
+
+        Move to the right of the top of the stack
+        >>>
+
+        Move right to RAM section start
+        +[>[<-]<[->+<]>]>
+
+        Move to left bus
+        >>
+
+        Increment left and right bus
+        +>+
+
+        Move left of RAM section start
+        <<<<
+
+        Move back to address on stack
+        +[<[>-]>[-<+>]<]<
+        <<
+    ]
+
+Move the data to be written into the first copy cell
+
+    Move to data on stack
+    >
+
+    [
+        Decrement data value on stack
+        -
+
+        Move to copy cell in RAM
+        >>
+        +[>[<-]<[->+<]>]>
+        >
+
+        Increment copy cell
+        +
+
+        Move back to data value on stack
+        <<
+        +[<[>-]>[-<+>]<]<
+        <
+
+    ]
+
+Move back to right bus in RAM
+>>
++[>[<-]<[->+<]>]>
+>>>
+
+Move right to the address
+[
+    Move to left bus cell
+    <
+
+    Copy left bus value while moving
+    [->>>>+<<<<]
+
+    Move to the copy cell
+    <
+
+    Copy the copy cell while moving
+    [->>>>+<<<<]
+
+    Move to right bus cell
+    >>
+
+    Move right one address
+    [>>>>+<<<<-]>>>>-
+]
+
+Move copy cell value into data cell
+
+    Move to copy cell
+    <<
+
+    Move data
+    [->>>+<<<]
+
+Move to left bus
+>
+
+Move left from the address until address 0 is reached
+[
+    Move left one address
+    [<<<<+>>>>-]<<<<-
+]
+
+Move to one on stack
+<<<
++[<[>-]>[-<+>]<]<
+
+Remove one from stack
+-
+
+Move to top of stack
+<<<

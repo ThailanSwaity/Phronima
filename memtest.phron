@@ -1,0 +1,26 @@
+import ./stdlib.phron
+
+fn main
+    initmem
+
+    65 10
+    while
+        swap dup dup write
+        swap 1 - 
+        swap 1 +
+        swap
+    end
+    pop
+    pop
+
+    65 10 while
+        swap dup read
+        chout
+        swap 1 -
+        swap 1 +
+        swap
+    end
+    pop
+    pop
+
+end

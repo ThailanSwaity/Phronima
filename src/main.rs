@@ -105,15 +105,8 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
     let mut current_function = program.get("main").unwrap();
     let mut current_function_name: String = "main".to_string();
 
-    // I'm using stack and memory here to assist with memory usage in brainf*ck
-    // I have not bothered to try and write an implementation that would allow run-time memory usage
-    const STACK_START: usize = 256;
-    let mut stack: Stack = Stack::new();
-    let mut memory: [u8; STACK_START] = [0u8; STACK_START];
-
-    for _i in 0..255 {
-        compiled_code.push('>');
-    }
+    let mut memory_initialized = false;
+    let memory_cell_size = 4;
 
     let mut i = 0;
     while i < current_function.len() {
@@ -123,139 +116,60 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 for _i in 0..*byte {
                     compiled_code.push('+');
                 }
-
-                stack.push(*byte);
             }
             Function::Pop() => {
                 compiled_code.push_str("[-]<");
-
-                stack.pop();
             }
             Function::Plus() => {
                 compiled_code.push_str("[<+>-]<");
-
-                let a = stack.pop();
-                let b = stack.pop();
-                stack.push(a + b);
             }
             Function::Minus() => {
                 compiled_code.push_str("[-<->]<");
-
-                let b = stack.pop();
-                let a = stack.pop();
-                // We shouldn't actually keep track of the stack anymore. Things break in
-                // complicated functions
-                stack.push(a.wrapping_sub(b));
             }
             Function::Mult() => {
                 compiled_code.push_str("<[->>+<<]>[->[->+<<<+>>]>[-<+>]<<]>[-]<<");
-
-                let b = stack.pop();
-                let a = stack.pop();
-                stack.push(a * b);
             }
             Function::CharOut() => {
                 compiled_code.push_str(".[-]<");
-
-                stack.pop();
             }
             // Numout source:
             // https://esolangs.org/wiki/Brainfuck_algorithms#Print_value_of_cell_x_as_number_(8-bit)
             Function::NumOut() => {
                 compiled_code.push_str(">>++++++++++<<[->+>-[>+>>]>[+[-<+>]>+>>]<<<<<<]>>[-]>>>++++++++++<[->-[>+>>]>[+[- <+>]>+>>]<<<<<]>[-]>>[>++++++[-<++++++++>]<.<<+>+>[-]]<[<[->-<]++++++[->++++++++ <]>.[-]]<<++++++[-<++++++++>]<.[-]<<[-<+>]<");
                 compiled_code.push_str("[-]<");
-
-                stack.pop();
             }
             Function::Write() => {
-                // As a better alternative, we want the address pointer to be constant during loops instead
-                // of the address value
-
-                // So while popping the byte value, we want to copy it to the address in memory
-                // instead of hardcoding the value
-                let byte = stack.pop();
-
-                let addr = stack.pop();
-
-                // In the brainfuck code, the address and byte haven't been popped yet
-                let stack_top: usize = stack.top + 2;
-
-                // First we have to set the value at the address to 0
-                for _i in 0..(255 + stack_top - addr as usize) {
-                    compiled_code.push('<');
+                if !memory_initialized {
+                    eprintln!("You must first call 'initmem' before trying to access the memory");
+                } else {
+                    compiled_code.push_str(">+<<[->>>+[>[<-]<[->+<]>]>>>+>+<<<<+[<[>-]>[-<+>]<]<<<]>[->>+[>[<-]<[->+<]>]>>+<<+[<[>-]>[-<+>]<]<<]>>+[>[<-]<[->+<]>]>>>>[<[->>>>+<<<<]<[->>>>+<<<<]>>[>>>>+<<<<-]>>>>-]<<[->>>+<<<]>[[<<<<+>>>>-]<<<<-]<<<+[<[>-]>[-<+>]<]<-<<<");
                 }
-                compiled_code.push_str("[-]");
-                for _i in 0..(255 + stack_top - addr as usize) {
-                    compiled_code.push('>');
-                }
-
-                // This copies the value from the top of the stack to the memory address
-                compiled_code.push_str("[-");
-                for _i in 0..(255 + stack_top - addr as usize) {
-                    compiled_code.push('<');
-                }
-                compiled_code.push('+');
-                for _i in 0..(255 + stack_top - addr as usize) {
-                    compiled_code.push('>');
-                }
-                compiled_code.push_str("]<");
-
-                // This pops the address from the stack, we do not need to copy the address pointer
-                compiled_code.push_str("[-]<");
-
-                memory[addr as usize] = byte;
             }
             Function::Read() => {
-                // The read must copy the value into two places first
-
-                compiled_code.push_str("[-]<");
-                let addr = stack.pop();
-
-                let byte = memory[addr as usize];
-
-                compiled_code.push('>');
-                stack.push(byte);
-
-                for _i in 0..(255 + stack.top - addr as usize) {
-                    compiled_code.push('<');
-                }
-                compiled_code.push_str("[-");
-                for _i in 0..(255 + stack.top - addr as usize) {
-                    compiled_code.push('>');
-                }
-                compiled_code.push('+');
-                for _i in 0..(255 + stack.top) {
-                    compiled_code.push('<');
-                }
-                compiled_code.push('+');
-                for _i in 0..(addr as usize) {
-                    compiled_code.push('>');
-                }
-                compiled_code.push(']');
-
-                // Finished copying value onto stack. We now have to copy the value back into the
-                // original address
-                for _i in 0..(addr as usize) {
-                    compiled_code.push('<');
-                }
-                compiled_code.push_str("[-");
-                for _i in 0..(addr as usize) {
-                    compiled_code.push('>');
-                }
-                compiled_code.push('+');
-                for _i in 0..(addr as usize) {
-                    compiled_code.push('<');
-                }
-                compiled_code.push(']');
-
-                // Go back to top of stack
-                for _i in 0..(255 + stack.top) {
-                    compiled_code.push('>');
+                if !memory_initialized {
+                    eprintln!("You must first call 'initmem' before trying to access the memory");
+                } else {
+                    compiled_code.push_str(">+<[->>+[>[<-]<[->+<]>]>>>+>+<<<<+[<[>-]>[-<+>]<]<<]>>+[>[<-]<[->+<]>]>>>>[<[->>>>+<<<<]>[>>>>+<<<<-]>>>>-]>[-<+<<+>>>]<[->+<]<[<[-<<<<+>>>>]>[<<<<+>>>>-]<<<<-]<[-<<+[<[>-]>[-<+>]<]<<+>>+[>[<-]<[->+<]>]>>]<<+[<[>-]>[-<+>]<]<-<");
                 }
             }
             Function::Mem() => {
                 compiled_code.push_str(">+");
-                stack.push(1u8);
+            }
+            Function::InitMem() => {
+                if !memory_initialized {
+                    for _i in 0..(30000-256*memory_cell_size-1) {
+                        compiled_code.push('>');
+                    }
+                    for _i in 0..82 {
+                        compiled_code.push('+');
+                    }
+                    for _i in 0..(30000-256*memory_cell_size-1) {
+                        compiled_code.push('<');
+                    }
+                    memory_initialized = true;
+                } else {
+                    eprintln!("Memory has already been initialized");
+                }
             }
             Function::If(_index) => {
                 compiled_code.push('[');
@@ -281,13 +195,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
             // TODO: fix the behaviour of if and else incorrectly moving the stack
             Function::Else(_index) => {
                 compiled_code.push_str(">]<");
-
                 compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
-                let byte = stack.pop();
-
-                let not_byte = 1u8.wrapping_sub(byte);
-                stack.push(not_byte);
-
                 compiled_code.push('[');
             }
             Function::While(_index) => {
@@ -304,28 +212,15 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
             }
             Function::Swap() => {
                 compiled_code.push_str("<[->>+<<]>[-<+>]>[-<+>]<");
-
-                let a = stack.pop();
-                let b = stack.pop();
-                stack.push(a);
-                stack.push(b);
             }
             Function::Dup() => {
                 compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
-
-                let a = stack.pop();
-                stack.push(a);
-                stack.push(a);
             }
             Function::GetStackHeight() => {
                 todo!("get stack height compiler code");
             }
             Function::Not() => {
                 compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
-                let byte = stack.pop();
-
-                let not_byte = 1u8.wrapping_sub(byte);
-                stack.push(not_byte);
             }
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
@@ -346,11 +241,9 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
 
                 // Push 0 (NULL character) to the stack
                 compiled_code.push('>');
-                stack.push(0u8);
 
                 // Push each character in the string to the stack in reverse order
                 for i in (0..byte_string.len()).rev() {
-                    stack.push(byte_string[i]);
                     compiled_code.push('>');
                     for _i in 0..byte_string[i] {
                         compiled_code.push('+');
@@ -424,6 +317,9 @@ fn simulate_program(program: Program) {
             }
             Function::Mem() => {
                 stack.push(1u8);
+            }
+            Function::InitMem() => {
+                // Do nothing
             }
             Function::If(index) => {
                 let a = stack.pop();

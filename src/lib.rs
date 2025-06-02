@@ -13,6 +13,7 @@ pub enum Function {
     Write(),
     Read(),
     Mem(),
+    InitMem(),
     If(Option<usize>),
     End(Option<usize>),
     Else(Option<usize>),
@@ -82,6 +83,8 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             parsed_tokens.push(Function::Read());
         } else if token.value == "mem" {
             parsed_tokens.push(Function::Mem());
+        } else if token.value == "initmem" {
+            parsed_tokens.push(Function::InitMem());
         } else if token.value == "if" {
             parsed_tokens.push(Function::If(None));
         } else if token.value == "end" {
