@@ -23,4 +23,11 @@ fn main
     pop
     pop
 
+    10 chout
+
+    "Hello, world!" 0 write_string
+
+    13 read_string
+    println_string
+
 end

@@ -1,7 +1,7 @@
 // This is the standard library for the Phronima language.
 // It can be imported to using "import ./std.phron"
-//
-//
+
+
 // Prints from the top of the stack until it hits a NULL character
 fn print_string
     while
@@ -18,8 +18,42 @@ fn println_string
     10 chout
 end
 
+// Writes a string from the stack to a starting address in memory
+// Note: this function expects the string to be NULL terminated
+// Arguments: String, u8
+//     text to store, address to store to
+fn write_string
+    dup 0 write
+    1 +
+    swap
+    while
+        2dup write
+        pop
+        1 +
+        swap
+    end
+    pop
+    pop
+end
+
+// Reads a string from memory and puts it onto the stack in reverse order
+// 
+// Arguments: u8
+//            address at which you expect the end of the string..
+fn read_string
+    0 swap
+    dup read
+    while
+        swap 1 -
+        dup read
+    end
+    swap pop
+    pop
+end
+
 // Computes the factorial of the value at the top of the stack
 // Uses memory address 13 as a temp value
+// This function is deprecated
 fn !
     mem 13 + 1 write
     while

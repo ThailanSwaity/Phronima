@@ -216,6 +216,9 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
             Function::Dup() => {
                 compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
             }
+            Function::TwoDup() => {
+                compiled_code.push_str("<[->>+>>+<<<<]>[->>+>>+<<<<]>>>[-<<<<+>>>>]>[-<<<<+>>>>]<<");
+            }
             Function::GetStackHeight() => {
                 todo!("get stack height compiler code");
             }
@@ -381,6 +384,16 @@ fn simulate_program(program: Program) {
             Function::Dup() => {
                 let a = stack.pop();
                 stack.push(a);
+                stack.push(a);
+            }
+            Function::TwoDup() => {
+                let a = stack.pop();
+                let b = stack.pop();
+
+                stack.push(b);
+                stack.push(a);
+
+                stack.push(b);
                 stack.push(a);
             }
             Function::GetStackHeight() => {

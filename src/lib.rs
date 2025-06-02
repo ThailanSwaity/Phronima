@@ -23,6 +23,7 @@ pub enum Function {
     Equals(),
     Swap(),
     Dup(),
+    TwoDup(),
     GetStackHeight(),
     Not(),
     FunctionDeclaration(String),
@@ -103,6 +104,8 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             parsed_tokens.push(Function::Swap());
         } else if token.value == "dup" {
             parsed_tokens.push(Function::Dup());
+        } else if token.value == "2dup" {
+            parsed_tokens.push(Function::TwoDup());
         } else if token.value == "?" {
             parsed_tokens.push(Function::GetStackHeight());
         } else if token.value == "not" {
