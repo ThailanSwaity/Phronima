@@ -81,6 +81,19 @@ fn loop_coordinates
     pop
 end
 ```
+A program that writes and reads a string from memory
+```
+import ./stdlib.phron 
+
+fn main
+    initmem
+
+    "Hello, initmem" mem write_string
+
+    mem 14 + read_string
+    println_string
+end
+```
 
 # Supported operations
 | operation|compiler   |simulator  |

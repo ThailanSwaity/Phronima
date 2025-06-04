@@ -153,17 +153,17 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 }
             }
             Function::Mem() => {
-                compiled_code.push_str(">+");
+                compiled_code.push_str(">");
             }
             Function::InitMem() => {
                 if !memory_initialized {
-                    for _i in 0..(30000-256*memory_cell_size-1) {
+                    for _i in 0..(30000 - 256 * memory_cell_size - 1) {
                         compiled_code.push('>');
                     }
                     for _i in 0..82 {
                         compiled_code.push('+');
                     }
-                    for _i in 0..(30000-256*memory_cell_size-1) {
+                    for _i in 0..(30000 - 256 * memory_cell_size - 1) {
                         compiled_code.push('<');
                     }
                     memory_initialized = true;
@@ -217,7 +217,8 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
             }
             Function::TwoDup() => {
-                compiled_code.push_str("<[->>+>>+<<<<]>[->>+>>+<<<<]>>>[-<<<<+>>>>]>[-<<<<+>>>>]<<");
+                compiled_code
+                    .push_str("<[->>+>>+<<<<]>[->>+>>+<<<<]>>>[-<<<<+>>>>]>[-<<<<+>>>>]<<");
             }
             Function::GetStackHeight() => {
                 todo!("get stack height compiler code");
@@ -319,7 +320,7 @@ fn simulate_program(program: Program) {
                 stack.push(memory[a as usize]);
             }
             Function::Mem() => {
-                stack.push(1u8);
+                stack.push(0u8);
             }
             Function::InitMem() => {
                 // Do nothing

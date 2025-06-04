@@ -3,8 +3,8 @@ import ./stdlib.phron
 fn main
     initmem
 
-    "Hello, world!" 0 write_string
+    "Hello, initmem" mem write_string
 
-    13 read_string
+    mem 14 + read_string
     println_string
 end
