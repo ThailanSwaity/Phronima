@@ -40,6 +40,48 @@ Be careful when writing with this language as it is very easy to cause stack und
 Memory can be written to and read from during run-time.
 Programs can initialize a section of "RAM" that is 256 bytes long by calling the __initmem__ function
 
+# Snippets
+A simple hello world program
+```
+import ./stdlib.phron
+
+fn main
+    "Hello, world!" println_string
+end
+```
+A program that prints all value pairs from 1 to 10 as "coordinates"
+```
+import ./stdlib.phron 
+
+fn main
+    loop_coordinates
+end
+
+fn loop_coordinates
+    // [ x, y ]
+    10 
+    while
+        10
+        while
+            "x: " print_string
+            dup numout
+            swap
+
+            "," print_string
+
+            "y: " print_string
+            dup numout
+            10 chout
+            swap
+            1 -
+        end
+        pop
+        1 -
+    end
+    pop
+end
+```
+
 # Supported operations
 | operation|compiler   |simulator  |
 |------------|-----------|-----------|
