@@ -105,6 +105,7 @@ end
 | = (equal to)    | |:heavy_check_mark: |
 | swap  |:heavy_check_mark: |:heavy_check_mark: |
 | dup   |:heavy_check_mark: |:heavy_check_mark: |
+| 2dup   |:heavy_check_mark: |:heavy_check_mark: |
 | not (BITWISE) |:heavy_check_mark: |:heavy_check_mark: |
 
 # Operation descriptions
@@ -115,6 +116,7 @@ end
 | push| a -> a b|
 | pop | a b -> a|
 | dup | a -> a a |
+| 2dup | a b -> a b a b |
 | swap| a b -> b a|
 
 ## Math 
