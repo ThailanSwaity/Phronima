@@ -1,4 +1,5 @@
 /target
-compiled_code.txt 
-program_comp.txt 
-test.phron
+*.phron
+*.c
+*.o
+*.bf

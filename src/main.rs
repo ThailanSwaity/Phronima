@@ -5,6 +5,7 @@ use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::Write;
+use std::path::PathBuf;
 use std::process;
 
 fn main() {
@@ -29,7 +30,8 @@ fn main() {
                 eprintln!("Application error: {err}");
                 process::exit(1);
             });
-            let _ = write_program_to_file("compiled_code.txt", compiled_code);
+            let new_filepath = change_extension_to_bf(filepath);
+            let _ = write_program_to_file(&new_filepath, compiled_code);
         }
     } else if &args[1] == "rec" {
         println!("Creating compilatin test validation files...\n");
@@ -172,11 +174,12 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 }
             }
             Function::If(_index) => {
+                compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
                 compiled_code.push('[');
             }
             Function::End(index) => {
                 if index.unwrap() == current_function.len() {
-                    compiled_code.push_str(">]<");
+                    compiled_code.push_str("[-]]<");
                 } else if index.unwrap() > current_function.len() {
                     eprintln!("Something really not great happened here...");
                     process::exit(1);
@@ -186,7 +189,7 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                             compiled_code.push(']');
                         }
                         _ => {
-                            compiled_code.push_str(">]<"); // This moves the cell pointer to a block
+                            compiled_code.push_str("[-]]<"); // This moves the cell pointer to a block
                             // with a value of 0 to ensure the if block never executes more than once
                         }
                     }
@@ -194,7 +197,8 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
             }
             // TODO: fix the behaviour of if and else incorrectly moving the stack
             Function::Else(_index) => {
-                compiled_code.push_str(">]<");
+                compiled_code.push_str("[-]]<");
+                compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
                 compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
                 compiled_code.push('[');
             }
@@ -440,6 +444,12 @@ fn simulate_program(program: Program) {
             current_function = program.get(&fname).unwrap();
         }
     }
+}
+
+fn change_extension_to_bf(filename: &str) -> String {
+    let mut file: PathBuf = PathBuf::from(filename);
+    file.set_extension("bf");
+    file.into_os_string().into_string().unwrap()
 }
 
 // I don't care to catch each error here.

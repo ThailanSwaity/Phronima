@@ -147,6 +147,7 @@ end
 |-|-----------|
 | read| a -> pops a from the stack, pushes byte at memory address a to the stack |
 | write| a b -> pops a and b from the stack, writes b to address a |
+| mem|pushes the first address in memory to the stack (0) mostly just to increase readability|
 
 ## Control flow
 | operation|Stack Behaviour|
