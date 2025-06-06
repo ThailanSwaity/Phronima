@@ -66,3 +66,12 @@ fn !
 
     mem 13 + read
 end
+
+// Write an array of a specified length to memory starting at a specified address
+fn write_array
+end
+
+// Read an array of a specified length
+fn read_array
+    
+end

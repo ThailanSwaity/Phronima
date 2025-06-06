@@ -212,10 +212,36 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
                 todo!("greaterthan compiler code");
             }
             Function::Equals() => {
-                todo!("equals compiler code");
+                compiled_code.push_str("<[>>>+<<<-]+>[>>-<+<-]>[<+>-]>[<<<->>>[-]]<<[-]<");
             }
             Function::Swap() => {
                 compiled_code.push_str("<[->>+<<]>[-<+>]>[-<+>]<");
+            }
+            Function::Pull(number) => {
+                for _i in 0..*number {
+                    compiled_code.push('<');
+                }
+                compiled_code.push_str("[-");
+                for _i in 0..number + 1 {
+                    compiled_code.push('>');
+                }
+                compiled_code.push_str("+>+");
+                for _i in 0..number + 2 {
+                    compiled_code.push('<');
+                }
+                compiled_code.push(']');
+                for _i in 0..number + 2 {
+                    compiled_code.push('>');
+                }
+                compiled_code.push_str("[-");
+                for _i in 0..number + 2 {
+                    compiled_code.push('<');
+                }
+                compiled_code.push('+');
+                for _i in 0..number + 2 {
+                    compiled_code.push('>');
+                }
+                compiled_code.push_str("]<");
             }
             Function::Dup() => {
                 compiled_code.push_str("[->+>+<<]>>[-<<+>>]<");
@@ -229,6 +255,9 @@ fn compile_program(program: Program) -> Result<String, Box<dyn Error>> {
             }
             Function::Not() => {
                 compiled_code.push_str(">[-]<-[>-<-]>[<+>-]<");
+            }
+            Function::And() => {
+                compiled_code.push_str("<[>>>+<<<-]>>>[[-]<<[>>+<+<-]>[<+>-]>[<<<+>>>[-]]]<<[-]<");
             }
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");
@@ -386,6 +415,11 @@ fn simulate_program(program: Program) {
                 stack.push(a);
                 stack.push(b);
             }
+            Function::Pull(number) => {
+                let index_to_dup = stack.top - *number as usize;
+                let a = stack.data.get(index_to_dup).unwrap();
+                stack.push(*a);
+            }
             Function::Dup() => {
                 let a = stack.pop();
                 stack.push(a);
@@ -409,6 +443,12 @@ fn simulate_program(program: Program) {
 
                 let not_byte = 1u8.wrapping_sub(byte);
                 stack.push(not_byte);
+            }
+            Function::And() => {
+                let a = stack.pop();
+                let b = stack.pop();
+
+                stack.push(a & b);
             }
             Function::FunctionDeclaration(_) => {
                 println!("This shouldn't be reachable");

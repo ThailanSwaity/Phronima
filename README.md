@@ -26,8 +26,6 @@ NOTE: some operations do not currently work in 'compile' mode. Still a work in p
       cargo run -- sim ./examples/helloworld.phron
       cargo run -- com ./examples/helloworld.phron
 
-Currently, the compiled code will be written to a file called "program_comp.txt"
-
 # Memory
 Phronima uses an array of 256 bytes as its addressable "memory", with the remaining 29,744 cells of brainf*ck to be used as a stack
 
@@ -115,7 +113,7 @@ end
 | while |:heavy_check_mark: |:heavy_check_mark: |
 | < (less than)    | |:heavy_check_mark: |
 | > (greater than)    | |:heavy_check_mark: |
-| = (equal to)    | |:heavy_check_mark: |
+| = (equal to)    |:heavy_check_mark:  |:heavy_check_mark: |
 | swap  |:heavy_check_mark: |:heavy_check_mark: |
 | dup   |:heavy_check_mark: |:heavy_check_mark: |
 | 2dup   |:heavy_check_mark: |:heavy_check_mark: |

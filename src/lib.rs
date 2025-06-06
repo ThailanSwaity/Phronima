@@ -22,10 +22,12 @@ pub enum Function {
     GreaterThan(),
     Equals(),
     Swap(),
+    Pull(u8),
     Dup(),
     TwoDup(),
     GetStackHeight(),
     Not(),
+    And(),
     FunctionDeclaration(String),
     FunctionCall(String),
     StringLiteral(String),
@@ -102,6 +104,18 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             parsed_tokens.push(Function::Equals());
         } else if token.value == "swap" {
             parsed_tokens.push(Function::Swap());
+        } else if token.value == "pull" {
+            if let Some(token) = token_iter.next() {
+                if let Ok(number) = token.value.parse::<u8>() {
+                    parsed_tokens.push(Function::Pull(number));
+                } else {
+                    eprintln!(
+                        "{}:{}:{} expected number, received: '{}'",
+                        token.filepath, token.row, token.col, token.value
+                    ); // Need to improve better error reporting
+                    return Err("Syntax error")?;
+                }
+            }
         } else if token.value == "dup" {
             parsed_tokens.push(Function::Dup());
         } else if token.value == "2dup" {
@@ -110,6 +124,8 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<Function>, Box<dyn Error>>
             parsed_tokens.push(Function::GetStackHeight());
         } else if token.value == "not" {
             parsed_tokens.push(Function::Not());
+        } else if token.value == "&&" {
+            parsed_tokens.push(Function::And());
         } else if token.value == "fn" {
             if let Some(token) = token_iter.next() {
                 parsed_tokens.push(Function::FunctionDeclaration(token.value.to_string()));
